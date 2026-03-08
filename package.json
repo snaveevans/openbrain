@@ -1,0 +1,10 @@
+{
+  "name": "openbrain-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace @snaveevans/openbrain-mcp"
+  }
+}

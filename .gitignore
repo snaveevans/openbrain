@@ -8,3 +8,9 @@ supabase/.temp/
 .env
 .env.*
 !.env.example
+
+# Node build artifacts
+node_modules/
+dist/
+packages/*/node_modules/
+packages/*/dist/
