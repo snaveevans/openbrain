@@ -1,0 +1,4 @@
+project_id = "openbrain"
+
+[functions.hello]
+verify_jwt = false
