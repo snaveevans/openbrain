@@ -1,24 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createServiceClient, generateEmbedding, json, requireApiKey } from "../_shared/common.ts";
 
 interface CreateMemoryPayload {
   content?: unknown;
   source?: unknown;
   metadata?: unknown;
-}
-
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body, null, 2), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-    },
-  });
-}
-
-function getApiToken(req: Request): string | null {
-  const header = req.headers.get("x-api-key");
-  return header?.trim() || null;
 }
 
 function validatePayload(payload: CreateMemoryPayload): { content: string; source: string; metadata: Record<string, unknown> } {
@@ -47,20 +33,9 @@ Deno.serve(async (req) => {
     return json({ error: "Method not allowed." }, 405);
   }
 
-  const configuredApiKey = Deno.env.get("API_KEY")?.trim();
-  if (!configuredApiKey) {
-    return json({ error: "API_KEY secret is not configured." }, 500);
-  }
-
-  const providedApiKey = getApiToken(req);
-  if (providedApiKey !== configuredApiKey) {
-    return json({ error: "Unauthorized." }, 401);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
-  if (!supabaseUrl || !serviceRoleKey) {
-    return json({ error: "Supabase credentials are not configured." }, 500);
+  const authError = requireApiKey(req);
+  if (authError) {
+    return authError;
   }
 
   let payload: CreateMemoryPayload;
@@ -77,17 +52,27 @@ Deno.serve(async (req) => {
     return json({ error: error instanceof Error ? error.message : "Invalid request body." }, 400);
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  let supabase;
+  let embedding;
+  let embeddingModel;
+  try {
+    supabase = createServiceClient();
+    const generated = await generateEmbedding(values.content);
+    embedding = generated.embedding;
+    embeddingModel = generated.model;
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Failed to initialize memory creation." }, 500);
+  }
 
   const { data, error } = await supabase
     .from("memories")
-    .insert(values)
-    .select("id, content, source, metadata, created_at, updated_at")
+    .insert({
+      ...values,
+      embedding,
+      embedding_model: embeddingModel,
+      embedded_at: new Date().toISOString(),
+    })
+    .select("id, content, source, metadata, embedding_model, created_at, updated_at, embedded_at")
     .single();
 
   if (error) {

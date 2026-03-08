@@ -1,22 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createServiceClient, json, requireApiKey } from "../_shared/common.ts";
 
 interface DeleteMemoryPayload {
   id?: unknown;
-}
-
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body, null, 2), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-    },
-  });
-}
-
-function getApiToken(req: Request): string | null {
-  const header = req.headers.get("x-api-key");
-  return header?.trim() || null;
 }
 
 function isUuid(value: string): boolean {
@@ -36,20 +22,9 @@ Deno.serve(async (req) => {
     return json({ error: "Method not allowed." }, 405);
   }
 
-  const configuredApiKey = Deno.env.get("API_KEY")?.trim();
-  if (!configuredApiKey) {
-    return json({ error: "API_KEY secret is not configured." }, 500);
-  }
-
-  const providedApiKey = getApiToken(req);
-  if (providedApiKey !== configuredApiKey) {
-    return json({ error: "Unauthorized." }, 401);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
-  if (!supabaseUrl || !serviceRoleKey) {
-    return json({ error: "Supabase credentials are not configured." }, 500);
+  const authError = requireApiKey(req);
+  if (authError) {
+    return authError;
   }
 
   let payload: DeleteMemoryPayload;
@@ -66,12 +41,12 @@ Deno.serve(async (req) => {
     return json({ error: error instanceof Error ? error.message : "Invalid request body." }, 400);
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  let supabase;
+  try {
+    supabase = createServiceClient();
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Failed to initialize delete_memory." }, 500);
+  }
 
   const { data, error } = await supabase
     .from("memories")

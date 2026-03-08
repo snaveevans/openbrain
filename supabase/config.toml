@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.hello]
 verify_jwt = false
+
+[functions.search_memories]
+verify_jwt = false
