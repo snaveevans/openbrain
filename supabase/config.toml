@@ -1,4 +1,7 @@
 project_id = "openbrain"
 
+[functions.create_memory]
+verify_jwt = false
+
 [functions.hello]
 verify_jwt = false
