@@ -94,7 +94,7 @@ key, `x-api-key`, or memory contents.”
 
 - OAuth / OIDC metadata and bearer tokens (later gate in front of _these_
   routes, new spec + ADR)
-- Choosing storage or embeddings
+- Choosing embeddings / search (sibling of [ADR-0005](../../decisions/0005-store-memories-in-d1.md); documents are in D1)
 - MCP or CLI behavior (those specs)
 - Package names and Worker wiring
 
