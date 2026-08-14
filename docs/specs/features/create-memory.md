@@ -88,7 +88,7 @@ metadata, API keys, or embeddings.
 
 - Update / upsert
 - Deferred embedding (embed before 201)
-- Choosing the embedding vendor
+- Changing the embedding model (see [ADR-0006](../../decisions/0006-embed-with-workers-ai-index-in-vectorize.md); that is a re-embed, not a config flip)
 - Client-specific create behavior
 
 ## Open Questions

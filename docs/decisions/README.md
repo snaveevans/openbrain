@@ -70,3 +70,4 @@ Use the project skills in `.agents/skills/` to keep records at decision altitude
 | [0003](0003-host-on-cloudflare.md)              | Host Open Brain on Cloudflare              | accepted |
 | [0004](0004-rest-as-domain-surface.md)          | REST as the domain surface                 | accepted |
 | [0005](0005-store-memories-in-d1.md)            | Store memory documents in D1               | accepted |
+| [0006](0006-embed-with-workers-ai-index-in-vectorize.md) | Embed with Workers AI and index in Vectorize | accepted |
