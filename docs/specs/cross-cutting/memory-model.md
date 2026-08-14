@@ -18,8 +18,9 @@ date: 2026-08-14
 Open Brain is a **single-tenant personal memory store**. Every feature that
 creates, searches, fetches, or deletes a memory uses the same document. This
 spec is the recovered contract from the pre-Cloudflare implementation
-(`3d52b8e`). Storage and embedding products are not decided here
-([ADR-0003](../../decisions/0003-host-on-cloudflare.md) left those open).
+(`3d52b8e`). Documents live in D1
+([ADR-0005](../../decisions/0005-store-memories-in-d1.md)). The embedding
+and search product is not decided here.
 
 ## Canonical Behavior
 
