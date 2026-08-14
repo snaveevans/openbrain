@@ -46,12 +46,12 @@ neither unless a spec's Observable Contract needs it.
 ## Current tree
 
 ```
-docs/                     Layered docs (see docs/README.md)
-packages/openbrain-mcp    Existing local MCP client (will be retargeted at REST)
+docs/                       Layered docs (see docs/README.md)
+packages/openbrain-common   Shared REST types and ports (not a runtime)
+packages/openbrain-mcp      Existing local MCP client (will be retargeted at REST)
 ```
 
-Intended packages (not all present yet): REST API, common contracts,
-remote MCP Worker, local MCP, CLI.
+Intended packages (not all present yet): REST API, remote MCP Worker, CLI.
 
 ## Working rules
 

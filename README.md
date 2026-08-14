@@ -16,7 +16,8 @@ are Workers AI; vectors live in Vectorize
 
 ## Packages
 
-- `packages/openbrain-mcp` - local stdio MCP client (to be retargeted at REST)
+- `packages/openbrain-common` — shared REST types and ports (not a runtime)
+- `packages/openbrain-mcp` — local stdio MCP client (to be retargeted at REST)
 
 ## Documentation
 
