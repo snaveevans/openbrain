@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "openbrain",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-14",
+  "account_id": "361062ddedd5f7e00c273012223fbb91",
+  "workers_dev": true,
+  // Worker is the origin for this hostname. DNS is created on deploy.
+  // tylerevans.co apex remains the Pages site.
+  "routes": [
+    { "pattern": "openbrain.tylerevans.co", "custom_domain": true },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

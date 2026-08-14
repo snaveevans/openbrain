@@ -1,0 +1,25 @@
+{
+  "name": "@snaveevans/openbrain-api",
+  "version": "0.1.0",
+  "description": "Open Brain REST API (Cloudflare Worker)",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@snaveevans/openbrain-common": "*",
+    "hono": "^4.13.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.123.0"
+  }
+}
