@@ -1,6 +1,7 @@
 {
   "name": "openbrain-monorepo",
   "private": true,
+  "license": "MIT",
   "workspaces": [
     "packages/*"
   ],

@@ -34,3 +34,8 @@ Docs are organized by **what you need**, not by who you are:
 npm install
 npm run build
 ```
+
+## License
+
+[MIT](LICENSE). The source is open; run your own instance. This repo is not a
+hosted multi-tenant service, and there is no public API to share.

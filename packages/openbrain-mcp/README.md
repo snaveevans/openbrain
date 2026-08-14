@@ -18,3 +18,8 @@ npx -y @snaveevans/openbrain-mcp --base-url https://your-openbrain-host --api-ke
 - `create_memory`
 - `delete_memory`
 - `search_memories`
+
+## License
+
+[MIT](../../LICENSE). Point `--base-url` at an instance you run. There is no
+public Open Brain API.

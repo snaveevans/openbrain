@@ -9,7 +9,9 @@ everything else.
 ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)). REST is the only
 domain surface; remote MCP, local MCP, and the CLI are thin clients
 ([ADR-0004](docs/decisions/0004-rest-as-domain-surface.md)). Storage and
-search products are not decided yet. First auth is a shared API key.
+search products are not decided yet. First auth is a shared API key. The
+source is [MIT](LICENSE); the product is a single-tenant store you self-host,
+not a public API.
 
 Do not implement the rewrite until the relevant ADRs and feature specs exist.
 
