@@ -1,3 +1,4 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 export interface EmbeddingResponse {
@@ -6,11 +7,12 @@ export interface EmbeddingResponse {
   }>;
 }
 
-export function json(body: unknown, status = 200): Response {
+export function json(body: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
+      ...headers,
     },
   });
 }

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login | Open Brain Auth</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/assets/login.js"></script>
+  </head>
+  <body>
+    <main class="shell shell--centered">
+      <section class="card stack-l">
+        <header class="stack-s">
+          <p class="eyebrow">Open Brain</p>
+          <h1>Sign in with magic link</h1>
+          <p class="muted">
+            This login is only used to approve remote MCP access.
+          </p>
+        </header>
+
+        <section id="auth-message" class="notice" hidden></section>
+
+        <div class="stack-s" id="session-panel" hidden>
+          <p class="muted" id="session-copy"></p>
+          <div class="actions">
+            <a class="button button--primary" id="continue-link" href="/oauth/consent">Continue</a>
+            <button class="button button--secondary" id="sign-out-button" type="button">Sign out</button>
+          </div>
+        </div>
+
+        <form class="stack-m" id="login-form">
+          <label class="field">
+            <span>Email</span>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required />
+          </label>
+          <button class="button button--primary" id="submit-button" type="submit">Send magic link</button>
+        </form>
+
+        <p class="muted small">
+          The link will return you to this page, restore your session, and continue to the MCP consent screen.
+        </p>
+      </section>
+    </main>
+  </body>
+  </html>
