@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Create Memory
 
-**Status:** `in-progress`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -38,10 +38,10 @@ forward this operation ([ADR-0004](../../decisions/0004-rest-as-domain-surface.m
 - [x] `S1` The returned memory includes `id`, `content`, `source`, `metadata`, `embedding_model`, `created_at`, `updated_at`, `embedded_at`
 - [x] `S1` Embed or store failure does not leave a successful 201; the caller sees `500`
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); the key is not stored on the memory
-- [ ] `S1` Whitespace-only `source` is treated as omitted (`"manual"`)
-- [ ] `S1` A request body that is valid JSON but not an object is rejected; nothing is stored
-- [ ] `S1` Content or a document larger than the embedder or store will accept is rejected; nothing is stored or indexed
-- [ ] `S1` Embed, store, or index failure leaves no memory row and no index entry
+- [x] `S1` Whitespace-only `source` is treated as omitted (`"manual"`)
+- [x] `S1` A request body that is valid JSON but not an object is rejected; nothing is stored
+- [x] `S1` Content or a document larger than the embedder or store will accept is rejected; nothing is stored or indexed
+- [x] `S1` Embed, store, or index failure leaves no memory row and no index entry
 
 ## Observable Contract
 

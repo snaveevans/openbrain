@@ -1,7 +1,9 @@
 import {
   DEFAULT_SOURCE,
+  ERROR_BODY_NOT_OBJECT,
   ERROR_CONTENT_EMPTY,
-  ERROR_INVALID_JSON,
+  ERROR_CONTENT_TOO_LARGE,
+  ERROR_MEMORY_TOO_LARGE,
   ERROR_METADATA_OBJECT,
   type CreateMemoryResponse,
   type Embedder,
@@ -11,8 +13,13 @@ import {
   type VectorIndex,
 } from "@snaveevans/openbrain-common";
 
-import { isoNow, newMemoryId } from "./clock.js";
+import { isoNow } from "./clock.js";
 import type { CreateDeps } from "./env.js";
+import {
+  estimatedMemoryRowBytes,
+  MAX_EMBED_CONTENT_CHARS,
+  MAX_MEMORY_ROW_BYTES,
+} from "./limits.js";
 
 export class ValidationError extends Error {
   readonly status = 400 as const;
@@ -31,7 +38,7 @@ export type CreateMemoryInput = {
 
 export function parseCreateBody(raw: unknown): CreateMemoryInput {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new ValidationError(ERROR_INVALID_JSON);
+    throw new ValidationError(ERROR_BODY_NOT_OBJECT);
   }
 
   const body = raw as Record<string, unknown>;
@@ -39,6 +46,7 @@ export function parseCreateBody(raw: unknown): CreateMemoryInput {
     throw new ValidationError(ERROR_CONTENT_EMPTY);
   }
 
+  const content = body.content.trim();
   const source =
     typeof body.source === "string" && body.source.trim().length > 0
       ? body.source.trim()
@@ -54,11 +62,20 @@ export function parseCreateBody(raw: unknown): CreateMemoryInput {
     throw new ValidationError(ERROR_METADATA_OBJECT);
   }
 
-  return {
-    content: body.content.trim(),
+  const input: CreateMemoryInput = {
+    content,
     source,
     metadata: (metadata as JsonObject | undefined) ?? {},
   };
+
+  if (content.length > MAX_EMBED_CONTENT_CHARS) {
+    throw new ValidationError(ERROR_CONTENT_TOO_LARGE);
+  }
+  if (estimatedMemoryRowBytes(input) > MAX_MEMORY_ROW_BYTES) {
+    throw new ValidationError(ERROR_MEMORY_TOO_LARGE);
+  }
+
+  return input;
 }
 
 export async function createMemory(
@@ -66,6 +83,9 @@ export async function createMemory(
   deps: CreateDeps,
 ): Promise<CreateMemoryResponse> {
   const embedded = await deps.embedder.embed(input.content, "document");
+  if (!Array.isArray(embedded.values) || embedded.values.length === 0) {
+    throw new Error("Embedding response did not include a vector.");
+  }
   const at = isoNow(deps.now());
   const document: MemoryDocument = {
     id: deps.id(),
@@ -78,7 +98,6 @@ export async function createMemory(
     embedded_at: at,
   };
 
-  await deps.store.insert(document);
   try {
     await deps.index.upsert({
       id: document.id,
@@ -86,7 +105,14 @@ export async function createMemory(
       source: document.source,
     });
   } catch (error) {
-    await deps.store.deleteById(document.id);
+    await deps.index.deleteById(document.id).catch(() => undefined);
+    throw error;
+  }
+
+  try {
+    await deps.store.insert(document);
+  } catch (error) {
+    await deps.index.deleteById(document.id).catch(() => undefined);
     throw error;
   }
 
@@ -103,6 +129,6 @@ export function productionCreateDeps(
     embedder,
     index,
     now: () => new Date(),
-    id: newMemoryId,
+    id: () => crypto.randomUUID(),
   };
 }

@@ -11,6 +11,7 @@ import type { CreateDeps } from "../src/env.js";
 export const TEST_MODEL = "test-embedder";
 export const FIXED_NOW = new Date("2026-08-14T12:00:00.000Z");
 export const FIXED_ID = "00000000-0000-4000-8000-000000000001";
+export const SECOND_ID = "00000000-0000-4000-8000-000000000002";
 
 export class MemoryStoreFake implements MemoryStore {
   readonly rows = new Map<string, MemoryDocument>();
@@ -48,16 +49,23 @@ export class MemoryStoreFake implements MemoryStore {
 export class EmbedderFake implements Embedder {
   lastText: string | undefined;
   lastRole: "document" | "query" | undefined;
+  calls = 0;
   failNext = false;
+  emptyNext = false;
   values = [0.1, 0.2, 0.3];
 
   async embed(text: string, role: "document" | "query") {
+    this.calls += 1;
+    this.lastText = text;
+    this.lastRole = role;
     if (this.failNext) {
       this.failNext = false;
       throw new Error("embed failed");
     }
-    this.lastText = text;
-    this.lastRole = role;
+    if (this.emptyNext) {
+      this.emptyNext = false;
+      return { values: [], model: TEST_MODEL };
+    }
     return { values: this.values, model: TEST_MODEL };
   }
 }
@@ -65,8 +73,11 @@ export class EmbedderFake implements Embedder {
 export class VectorIndexFake implements VectorIndex {
   readonly records = new Map<string, { values: number[]; source: string }>();
   failNextUpsert = false;
+  upserts = 0;
+  deletes = 0;
 
   async upsert(record: { id: string; values: number[]; source: string }) {
+    this.upserts += 1;
     if (this.failNextUpsert) {
       this.failNextUpsert = false;
       throw new Error("index write failed");
@@ -78,6 +89,7 @@ export class VectorIndexFake implements VectorIndex {
   }
 
   async deleteById(id: string) {
+    this.deletes += 1;
     this.records.delete(id);
   }
 

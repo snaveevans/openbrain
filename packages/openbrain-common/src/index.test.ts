@@ -7,10 +7,13 @@ import {
   DEFAULT_SEARCH_LIMIT,
   DEFAULT_SOURCE,
   ERROR_API_KEY_NOT_CONFIGURED,
+  ERROR_BODY_NOT_OBJECT,
   ERROR_CONTENT_EMPTY,
+  ERROR_CONTENT_TOO_LARGE,
   ERROR_ID_UUID,
   ERROR_INVALID_JSON,
   ERROR_MEMORY_NOT_FOUND,
+  ERROR_MEMORY_TOO_LARGE,
   ERROR_METADATA_OBJECT,
   ERROR_METHOD_NOT_ALLOWED,
   ERROR_NOT_FOUND,
@@ -59,6 +62,9 @@ test("auth and envelope constants match the specs", () => {
     "`metadata` must be a JSON object when provided.",
   );
   assert.equal(ERROR_INVALID_JSON, "Request body must be valid JSON.");
+  assert.equal(ERROR_BODY_NOT_OBJECT, "Request body must be a JSON object.");
+  assert.equal(ERROR_CONTENT_TOO_LARGE, "`content` is too large.");
+  assert.equal(ERROR_MEMORY_TOO_LARGE, "Memory is too large to store.");
   assert.equal(ERROR_ID_UUID, "`id` must be a valid UUID.");
   assert.equal(ERROR_QUERY_EMPTY, "`query` must be a non-empty string.");
 });
