@@ -46,9 +46,12 @@ export function createApp() {
 
   app.onError((err, c) => {
     const configured = (c.env?.API_KEY ?? "").trim();
-    const raw = err instanceof Error && err.message ? err.message : "Internal error.";
+    const raw =
+      err instanceof Error && err.message ? err.message : "Internal error.";
     const error =
-      configured.length > 0 && raw.includes(configured) ? "Internal error." : raw;
+      configured.length > 0 && raw.includes(configured)
+        ? "Internal error."
+        : raw;
     return jsonError(c, 500, error);
   });
 

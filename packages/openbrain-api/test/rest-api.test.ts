@@ -15,7 +15,11 @@ import { CACHE_CONTROL_NO_STORE } from "../src/http.js";
 const KEY = "test-api-key";
 const env = { API_KEY: KEY };
 
-function request(path: string, init: RequestInit = {}, bindings: { API_KEY?: string } = env) {
+function request(
+  path: string,
+  init: RequestInit = {},
+  bindings: { API_KEY?: string } = env,
+) {
   return createApp().request(path, init, bindings);
 }
 
@@ -24,13 +28,19 @@ describe("GET /v1/health", () => {
     const res = await request("/v1/health", {}, {});
     expect(res.status).toBe(200);
     expect(res.headers.get("Cache-Control")).toBe(CACHE_CONTROL_NO_STORE);
-    await expect(res.json()).resolves.toEqual({ ok: true, service: HEALTH_SERVICE });
+    await expect(res.json()).resolves.toEqual({
+      ok: true,
+      service: HEALTH_SERVICE,
+    });
   });
 
   it("treats a trailing slash as the same route", async () => {
     const res = await request("/v1/health/");
     expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toEqual({ ok: true, service: HEALTH_SERVICE });
+    await expect(res.json()).resolves.toEqual({
+      ok: true,
+      service: HEALTH_SERVICE,
+    });
   });
 
   it("does not include secrets or an auth_provider field", async () => {
@@ -46,13 +56,21 @@ describe("API_KEY gate", () => {
   it("returns 500 when the server key is missing", async () => {
     const res = await request("/v1/memories", { method: "POST" }, {});
     expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toEqual({ error: ERROR_API_KEY_NOT_CONFIGURED });
+    await expect(res.json()).resolves.toEqual({
+      error: ERROR_API_KEY_NOT_CONFIGURED,
+    });
   });
 
   it("returns 500 when the server key is whitespace", async () => {
-    const res = await request("/v1/memories", { method: "POST" }, { API_KEY: "   " });
+    const res = await request(
+      "/v1/memories",
+      { method: "POST" },
+      { API_KEY: "   " },
+    );
     expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toEqual({ error: ERROR_API_KEY_NOT_CONFIGURED });
+    await expect(res.json()).resolves.toEqual({
+      error: ERROR_API_KEY_NOT_CONFIGURED,
+    });
   });
 
   it("returns 401 for a missing header", async () => {
@@ -80,7 +98,9 @@ describe("API_KEY gate", () => {
   });
 
   it("does not accept the key in the query string", async () => {
-    const res = await request(`/v1/memories?api_key=${KEY}`, { method: "POST" });
+    const res = await request(`/v1/memories?api_key=${KEY}`, {
+      method: "POST",
+    });
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toEqual({ error: ERROR_UNAUTHORIZED });
   });
@@ -103,7 +123,9 @@ describe("API_KEY gate", () => {
 
 describe("error envelope", () => {
   it("returns 404 { error } for an unknown path", async () => {
-    const res = await request("/v1/nope", { headers: { [API_KEY_HEADER]: KEY } });
+    const res = await request("/v1/nope", {
+      headers: { [API_KEY_HEADER]: KEY },
+    });
     expect(res.status).toBe(404);
     expect(res.headers.get("Cache-Control")).toBe(CACHE_CONTROL_NO_STORE);
     await expect(res.json()).resolves.toEqual({ error: ERROR_NOT_FOUND });
@@ -112,14 +134,18 @@ describe("error envelope", () => {
   it("returns 405 { error } for the wrong method on a known path", async () => {
     const health = await request("/v1/health", { method: "POST" });
     expect(health.status).toBe(405);
-    await expect(health.json()).resolves.toEqual({ error: ERROR_METHOD_NOT_ALLOWED });
+    await expect(health.json()).resolves.toEqual({
+      error: ERROR_METHOD_NOT_ALLOWED,
+    });
 
     const memories = await request("/v1/memories", {
       method: "GET",
       headers: { [API_KEY_HEADER]: KEY },
     });
     expect(memories.status).toBe(405);
-    await expect(memories.json()).resolves.toEqual({ error: ERROR_METHOD_NOT_ALLOWED });
+    await expect(memories.json()).resolves.toEqual({
+      error: ERROR_METHOD_NOT_ALLOWED,
+    });
   });
 
   it("does not publish OAuth discovery routes", async () => {

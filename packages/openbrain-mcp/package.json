@@ -12,7 +12,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "type-check": "tsc -p tsconfig.json --noEmit"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

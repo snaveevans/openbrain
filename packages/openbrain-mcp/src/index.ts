@@ -49,11 +49,15 @@ function parseArgs(argv: string[]): CliOptions {
   const baseUrl = options.get("base-url") ?? process.env.OPENBRAIN_BASE_URL;
 
   if (!apiKey) {
-    throw new Error("Missing API key. Pass --api-key or set OPENBRAIN_API_KEY.");
+    throw new Error(
+      "Missing API key. Pass --api-key or set OPENBRAIN_API_KEY.",
+    );
   }
 
   if (!baseUrl) {
-    throw new Error("Missing base URL. Pass --base-url or set OPENBRAIN_BASE_URL.");
+    throw new Error(
+      "Missing base URL. Pass --base-url or set OPENBRAIN_BASE_URL.",
+    );
   }
 
   return {
@@ -62,7 +66,11 @@ function parseArgs(argv: string[]): CliOptions {
   };
 }
 
-async function postJson<T>(options: CliOptions, path: string, body: unknown): Promise<T> {
+async function postJson<T>(
+  options: CliOptions,
+  path: string,
+  body: unknown,
+): Promise<T> {
   const response = await fetch(`${options.baseUrl}/${path}`, {
     method: "POST",
     headers: {
@@ -73,10 +81,15 @@ async function postJson<T>(options: CliOptions, path: string, body: unknown): Pr
   });
 
   const text = await response.text();
-  const parsed = text ? JSON.parse(text) as T & { error?: string } : {} as T & { error?: string };
+  const parsed = text
+    ? (JSON.parse(text) as T & { error?: string })
+    : ({} as T & { error?: string });
 
   if (!response.ok) {
-    const message = typeof parsed.error === "string" ? parsed.error : `Request failed with ${response.status}`;
+    const message =
+      typeof parsed.error === "string"
+        ? parsed.error
+        : `Request failed with ${response.status}`;
     throw new Error(message);
   }
 
@@ -90,12 +103,18 @@ function renderMemory(memory: MemoryRecord): string {
     `created_at: ${memory.created_at}`,
     `updated_at: ${memory.updated_at}`,
     memory.embedded_at ? `embedded_at: ${memory.embedded_at}` : undefined,
-    memory.embedding_model ? `embedding_model: ${memory.embedding_model}` : undefined,
-    memory.similarity !== undefined ? `similarity: ${memory.similarity.toFixed(4)}` : undefined,
+    memory.embedding_model
+      ? `embedding_model: ${memory.embedding_model}`
+      : undefined,
+    memory.similarity !== undefined
+      ? `similarity: ${memory.similarity.toFixed(4)}`
+      : undefined,
     `metadata: ${JSON.stringify(memory.metadata)}`,
     "",
     memory.content,
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 async function main(): Promise<void> {
@@ -117,11 +136,15 @@ async function main(): Promise<void> {
       }),
     },
     async ({ content, source, metadata }) => {
-      const result = await postJson<{ memory: MemoryRecord }>(options, "create_memory", {
-        content,
-        source,
-        metadata,
-      });
+      const result = await postJson<{ memory: MemoryRecord }>(
+        options,
+        "create_memory",
+        {
+          content,
+          source,
+          metadata,
+        },
+      );
 
       return {
         content: [{ type: "text", text: renderMemory(result.memory) }],
@@ -138,10 +161,19 @@ async function main(): Promise<void> {
       }),
     },
     async ({ id }) => {
-      const result = await postJson<{ memory: MemoryRecord; deleted: boolean }>(options, "delete_memory", { id });
+      const result = await postJson<{ memory: MemoryRecord; deleted: boolean }>(
+        options,
+        "delete_memory",
+        { id },
+      );
 
       return {
-        content: [{ type: "text", text: `Deleted memory.\n\n${renderMemory(result.memory)}` }],
+        content: [
+          {
+            type: "text",
+            text: `Deleted memory.\n\n${renderMemory(result.memory)}`,
+          },
+        ],
       };
     },
   );
@@ -157,19 +189,25 @@ async function main(): Promise<void> {
       }),
     },
     async ({ query, limit, source }) => {
-      const result = await postJson<{ matches: MemoryRecord[] }>(options, "search_memories", {
-        query,
-        limit,
-        source,
-      });
+      const result = await postJson<{ matches: MemoryRecord[] }>(
+        options,
+        "search_memories",
+        {
+          query,
+          limit,
+          source,
+        },
+      );
 
       if (result.matches.length === 0) {
         return {
-          content: [{ type: "text", text: `No memories matched \"${query}\".` }],
+          content: [{ type: "text", text: `No memories matched "${query}".` }],
         };
       }
 
-      const text = result.matches.map((memory, index) => `${index + 1}.\n${renderMemory(memory)}`).join("\n\n---\n\n");
+      const text = result.matches
+        .map((memory, index) => `${index + 1}.\n${renderMemory(memory)}`)
+        .join("\n\n---\n\n");
 
       return {
         content: [{ type: "text", text }],

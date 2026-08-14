@@ -7,10 +7,24 @@
   "workers_dev": true,
   // Worker is the origin for this hostname. DNS is created on deploy.
   // tylerevans.co apex remains the Pages site.
-  "routes": [
-    { "pattern": "openbrain.tylerevans.co", "custom_domain": true },
-  ],
+  "routes": [{ "pattern": "openbrain.tylerevans.co", "custom_domain": true }],
   "observability": {
     "enabled": true,
   },
+  // Created by scripts/ensure-cloudflare.sh (idempotent). Keep database_id
+  // in sync with that script if the D1 is ever recreated.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "openbrain",
+      "database_id": "08681607-7750-46fd-8de9-ebac3dec3380",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "openbrain-memories",
+    },
+  ],
 }

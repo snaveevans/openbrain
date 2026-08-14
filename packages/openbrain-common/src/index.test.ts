@@ -46,12 +46,18 @@ test("auth and envelope constants match the specs", () => {
   assert.equal(API_KEY_ENV, "API_KEY");
   assert.equal(HEALTH_SERVICE, "openbrain");
   assert.equal(ERROR_UNAUTHORIZED, "Unauthorized.");
-  assert.equal(ERROR_API_KEY_NOT_CONFIGURED, "API_KEY secret is not configured.");
+  assert.equal(
+    ERROR_API_KEY_NOT_CONFIGURED,
+    "API_KEY secret is not configured.",
+  );
   assert.equal(ERROR_NOT_FOUND, "Not found.");
   assert.equal(ERROR_METHOD_NOT_ALLOWED, "Method not allowed.");
   assert.equal(ERROR_MEMORY_NOT_FOUND, "Memory not found.");
   assert.equal(ERROR_CONTENT_EMPTY, "`content` must be a non-empty string.");
-  assert.equal(ERROR_METADATA_OBJECT, "`metadata` must be a JSON object when provided.");
+  assert.equal(
+    ERROR_METADATA_OBJECT,
+    "`metadata` must be a JSON object when provided.",
+  );
   assert.equal(ERROR_INVALID_JSON, "Request body must be valid JSON.");
   assert.equal(ERROR_ID_UUID, "`id` must be a valid UUID.");
   assert.equal(ERROR_QUERY_EMPTY, "`query` must be a non-empty string.");
@@ -74,7 +80,11 @@ test("HTTP envelopes type-check against the REST contract", () => {
   const created: CreateMemoryResponse = { memory };
   const fetched: FetchMemoryResponse = { memory };
   const deleted: DeleteMemoryResponse = { memory, deleted: true };
-  const searchReq: SearchMemoriesRequest = { query: "note", limit: 5, threshold: 0.2 };
+  const searchReq: SearchMemoriesRequest = {
+    query: "note",
+    limit: 5,
+    threshold: 0.2,
+  };
   const hit: SearchHit = { ...memory, similarity: 0.91 };
   const searched: SearchMemoriesResponse = { matches: [hit] };
 
@@ -134,7 +144,10 @@ test("in-memory fakes satisfy the store, embedder, and index ports", async () =>
     },
     async query(input) {
       return [...vectors.entries()]
-        .filter(([, value]) => input.source === undefined || value.source === input.source)
+        .filter(
+          ([, value]) =>
+            input.source === undefined || value.source === input.source,
+        )
         .slice(0, input.limit)
         .map(([id]) => ({ id, score: 0.5 }));
     },
@@ -153,14 +166,24 @@ test("in-memory fakes satisfy the store, embedder, and index ports", async () =>
 
   const embedded = await embedder.embed(document.content, "document");
   await store.insert(document);
-  await index.upsert({ id: document.id, values: embedded.values, source: document.source });
+  await index.upsert({
+    id: document.id,
+    values: embedded.values,
+    source: document.source,
+  });
 
   assert.deepEqual(await store.getById(document.id), document);
   assert.equal((await store.getByIds([document.id, "missing"])).length, 1);
-  assert.equal((await index.query({ values: embedded.values, limit: 10 })).length, 1);
+  assert.equal(
+    (await index.query({ values: embedded.values, limit: 10 })).length,
+    1,
+  );
 
   await index.deleteById(document.id);
   assert.equal((await store.deleteById(document.id))?.id, document.id);
   assert.equal(await store.getById(document.id), null);
-  assert.equal((await index.query({ values: embedded.values, limit: 10 })).length, 0);
+  assert.equal(
+    (await index.query({ values: embedded.values, limit: 10 })).length,
+    0,
+  );
 });

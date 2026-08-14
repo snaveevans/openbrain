@@ -25,6 +25,10 @@ echo "$API_KEY" | npx wrangler secret put API_KEY
 `wrangler.jsonc`, run `npm run cf-typegen` if you want local runtime types
 (`worker-configuration.d.ts` is generated and gitignored).
 
+D1 (`openbrain`) and Vectorize (`openbrain-memories`) are created by
+`scripts/ensure-cloudflare.sh`. That script is idempotent and is what deploy CI
+runs before `wrangler deploy`.
+
 ## License
 
 [MIT](../../LICENSE). Point clients at an instance you run. There is no
