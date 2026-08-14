@@ -39,5 +39,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bundle Worker
+        working-directory: packages/openbrain-api
+        run: npx wrangler deploy --dry-run --outdir /tmp/openbrain-bundle
+
       - name: Test
         run: npm test
