@@ -1,28 +1,17 @@
 # Open Brain Monorepo
 
-Personal memory store exposed to agents over MCP. This repo currently contains
-the Supabase backend, the npm MCP package, and the thin auth frontend.
+Personal memory store exposed to agents over MCP.
 
 > **New here? Pick your door.** This README is the human overview. If you're an
 > AI agent, start with [`AGENTS.md`](AGENTS.md). For everything else, see the
 > [documentation map](#documentation) below.
 
+Open Brain is hosted on Cloudflare ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)).
+Identity, storage, and search are still open follow-up decisions.
+
 ## Packages
 
 - `packages/openbrain-mcp` - npm MCP server package published as `@snaveevans/openbrain-mcp`
-- `packages/openbrain-auth` - Cloudflare Pages auth frontend for the remote MCP OAuth flow
-
-## Cloudflare Pages Auth Build
-
-`packages/openbrain-auth` expects these build environment variables:
-
-- `OPENBRAIN_AUTH_SUPABASE_URL`
-- `OPENBRAIN_AUTH_SUPABASE_PUBLISHABLE_KEY`
-
-Supabase Auth should also allowlist `https://auth.txe.app/login` for magic-link redirects and route the OAuth authorization UI to `https://auth.txe.app/oauth/consent`.
-
-For local auth UI testing, `openbrain-auth` also supports `npm run dev --workspace openbrain-auth` on `http://127.0.0.1:3000`.
-It will auto-read `packages/openbrain-auth/.env.local` if present.
 
 ## Documentation
 

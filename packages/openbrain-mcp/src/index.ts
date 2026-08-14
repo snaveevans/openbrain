@@ -46,18 +46,14 @@ function parseArgs(argv: string[]): CliOptions {
   }
 
   const apiKey = options.get("api-key") ?? process.env.OPENBRAIN_API_KEY;
-  const baseUrlInput = options.get("base-url") ?? process.env.OPENBRAIN_BASE_URL;
-  const projectId = options.get("project-id") ?? process.env.OPENBRAIN_PROJECT_ID;
-  const baseUrl = baseUrlInput ?? (projectId ? `https://${projectId}.supabase.co/functions/v1` : undefined);
+  const baseUrl = options.get("base-url") ?? process.env.OPENBRAIN_BASE_URL;
 
   if (!apiKey) {
     throw new Error("Missing API key. Pass --api-key or set OPENBRAIN_API_KEY.");
   }
 
   if (!baseUrl) {
-    throw new Error(
-      "Missing base URL. Pass --base-url, pass --project-id, or set OPENBRAIN_BASE_URL/OPENBRAIN_PROJECT_ID.",
-    );
+    throw new Error("Missing base URL. Pass --base-url or set OPENBRAIN_BASE_URL.");
   }
 
   return {

@@ -5,8 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @snaveevans/openbrain-mcp",
-    "build:auth": "npm run build --workspace openbrain-auth",
-    "dev:auth": "npm run dev --workspace openbrain-auth"
+    "build": "npm run build --workspace @snaveevans/openbrain-mcp"
   }
 }

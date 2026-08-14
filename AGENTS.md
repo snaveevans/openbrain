@@ -5,10 +5,9 @@ everything else.
 
 ## What this is
 
-**Open Brain** — a personal memory store exposed to agents over MCP. The current
-code still runs on Supabase (Postgres + `pgvector`, Edge Functions, Auth) with a
-local MCP package and a thin Cloudflare Pages auth frontend. This branch,
-`cloudflare-rewrite`, is where the ops platform moves to Cloudflare.
+**Open Brain** — a personal memory store exposed to agents over MCP. The ops
+platform is Cloudflare ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)).
+Identity, storage, and search are not decided yet.
 
 Do not implement the rewrite until the relevant ADRs and feature specs exist.
 
@@ -36,11 +35,8 @@ neither unless a spec's Observable Contract needs it.
 ## Current tree
 
 ```
-docs/                 Layered docs (see docs/README.md)
+docs/                     Layered docs (see docs/README.md)
 packages/openbrain-mcp    Local/stdio MCP client package
-packages/openbrain-auth   Cloudflare Pages auth frontend
-supabase/             Current backend: migrations + Edge Functions
-scripts/              Operator helper scripts
 ```
 
 ## Working rules
