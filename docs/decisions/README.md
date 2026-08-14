@@ -68,3 +68,4 @@ Use the project skills in `.agents/skills/` to keep records at decision altitude
 | [0001](0001-use-madr-for-adrs.md)              | Use MADR for architecture decision records | accepted |
 | [0002](0002-documentation-method.md)           | Documentation method                       | accepted |
 | [0003](0003-host-on-cloudflare.md)              | Host Open Brain on Cloudflare              | accepted |
+| [0004](0004-rest-as-domain-surface.md)          | REST as the domain surface                 | accepted |
