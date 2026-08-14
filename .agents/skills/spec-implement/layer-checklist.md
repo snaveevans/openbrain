@@ -51,5 +51,5 @@ The sections below are a **generic inward-architecture prompt**. Rename folders 
 ## Verification (every layer chunk)
 
 - [ ] Lint / typecheck commands from `package.json` (or language equivalent)
-- [ ] Targeted tests for changed behavior
-- [ ] Acceptance tests for the slice still green (without editing them)
+- [ ] Targeted tests for changed behavior **and** the issue plan's P0 / minimum confidence set
+- [ ] Existing acceptance tests still green (without weakening them)

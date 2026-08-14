@@ -36,7 +36,7 @@ that API.
 | [cli](features/cli.md) | Thin CLI client | `review` |
 | [search-memories](features/search-memories.md) | Semantic search | `review` |
 | [fetch-memory](features/fetch-memory.md) | Point lookup | `review` |
-| [create-memory](features/create-memory.md) | Create + embed | `active` |
+| [create-memory](features/create-memory.md) | Create + embed | `in-progress` |
 | [delete-memory](features/delete-memory.md) | Hard delete | `review` |
 
 Operation specs describe REST behavior. Client specs only map to those
@@ -106,8 +106,12 @@ The prose skills in `.agents/skills/` are the local loop for this repo:
 
 1. **Decide** — `adr-author` / `adr-review` when the choice is architectural.
 2. **Specify** — `spec-author` writes observable criteria into a feature spec.
-3. **Implement** — `spec-implement` builds one slice and checks off only that
-   slice's boxes.
+3. **Test-plan** — `test-author` hunts spec gaps, records corner cases, and
+   posts the prioritized plan on the GitHub issue.
+4. **Implement** — `spec-implement` builds one slice from the spec **and**
+   that issue plan, and checks off only that slice's boxes.
+5. **Test-review** — `test-review` checks the tests against the spec and the
+   plan before `validation-gate` opens the PR.
 
 Keep architecture in ADRs and behavior in specs. Do not let implementation
 mechanism leak into either unless the spec's Observable Contract needs it.
