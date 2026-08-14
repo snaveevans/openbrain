@@ -34,7 +34,9 @@ skill before doing the work:
 | `adr-author`      | Recording, capturing, or superseding a hard-to-reverse decision |
 | `adr-review`      | Reviewing an ADR without editing it                             |
 | `spec-author`     | Drafting, documenting, or revising a feature spec               |
-| `spec-implement`  | Implementing one delivery-plan slice from a ready spec          |
+| `test-author`     | Blind test plan, spec corner cases, issue-comment the plan      |
+| `spec-implement`  | Implementing one slice from the spec and the issue test plan    |
+| `test-review`     | Verdict: do the tests pin the spec and the issue plan?          |
 | `validation-gate` | Rebase, review, risk-score, and open the PR                     |
 | `pr`              | Thinner PR open when the gate is overkill                       |
 | `pr-review`       | Adversarial review of a branch or PR                            |
@@ -48,7 +50,7 @@ neither unless a spec's Observable Contract needs it.
 ```
 docs/                       Layered docs (see docs/README.md)
 packages/openbrain-common   Shared REST types and ports (not a runtime)
-packages/openbrain-api      REST Worker (health, auth, envelope)
+packages/openbrain-api      REST Worker (health, auth, create)
 packages/openbrain-mcp      Existing local MCP client (will be retargeted at REST)
 ```
 

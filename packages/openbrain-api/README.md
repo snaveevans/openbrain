@@ -11,6 +11,7 @@ Versioned root `{api}`: `https://openbrain.tylerevans.co/v1`
 ```bash
 cp .dev.vars.example .dev.vars
 # edit API_KEY
+npx wrangler d1 migrations apply openbrain --local
 npx wrangler dev
 ```
 

@@ -1,4 +1,5 @@
 import {
+  ERROR_INVALID_JSON,
   ERROR_METHOD_NOT_ALLOWED,
   ERROR_NOT_FOUND,
   HEALTH_SERVICE,
@@ -8,13 +9,21 @@ import { Hono } from "hono";
 import { methodNotAllowed } from "hono/method-not-allowed";
 
 import { requireApiKey } from "./auth.js";
+import {
+  createMemory,
+  parseCreateBody,
+  productionCreateDeps,
+  ValidationError,
+} from "./create.js";
+import { D1MemoryStore } from "./d1-store.js";
+import type { ApiBindings, AppOptions } from "./env.js";
 import { CACHE_CONTROL_NO_STORE, jsonError } from "./http.js";
+import { VectorizeMemoryIndex } from "./vectorize-index.js";
+import { WorkersAiEmbedder } from "./workers-ai-embedder.js";
 
-export type ApiBindings = {
-  API_KEY?: string;
-};
+export type { ApiBindings } from "./env.js";
 
-export function createApp() {
+export function createApp(options: AppOptions = {}) {
   const app = new Hono<{ Bindings: ApiBindings }>({ strict: false });
 
   app.use(async (c, next) => {
@@ -36,8 +45,30 @@ export function createApp() {
     return c.json(body);
   });
 
-  // Known authenticated routes. Operation behavior is issues #5–#8.
-  app.post("/v1/memories", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
+  app.post("/v1/memories", async (c) => {
+    let raw: unknown;
+    try {
+      raw = await c.req.json();
+    } catch {
+      return jsonError(c, 400, ERROR_INVALID_JSON);
+    }
+
+    let input;
+    try {
+      input = parseCreateBody(raw);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return jsonError(c, 400, error.message);
+      }
+      throw error;
+    }
+
+    const deps = options.create ?? runtimeCreateDeps(c.env);
+    const created = await createMemory(input, deps);
+    return c.json(created, 201);
+  });
+
+  // Remaining operation behavior is issues #6–#8.
   app.post("/v1/memories/search", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
   app.get("/v1/memories/:id", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
   app.delete("/v1/memories/:id", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
@@ -56,4 +87,15 @@ export function createApp() {
   });
 
   return app;
+}
+
+function runtimeCreateDeps(env: ApiBindings) {
+  if (!env.DB || !env.AI || !env.VECTORIZE) {
+    throw new Error("Storage bindings are not configured.");
+  }
+  return productionCreateDeps(
+    new D1MemoryStore(env.DB),
+    new WorkersAiEmbedder(env.AI),
+    new VectorizeMemoryIndex(env.VECTORIZE),
+  );
 }

@@ -21,7 +21,7 @@ PR body tells the human how much time to spend.
 
 - After implementation, before or instead of a bare `pr`
 - When the user says "gate this", "validation-gate", or "open the PR"
-- As the verify→PR tail of `spec-implement`
+- As the verify→PR tail of `spec-implement` (after `test-review` on a spec slice)
 
 ## Pipeline
 
@@ -216,6 +216,7 @@ Next: <what you need from the human, if anything>
 
 | Skill | Role under this gate |
 | ----- | -------------------- |
+| `test-review` | Before this gate: tests vs spec + issue plan. Fold survivors into Evidence / Escalations |
 | `pr-review` | Step 2 adversarial review |
 | `pr-respond` | Step 8 CI / review thread handling |
 | `pr` | Step 7 mechanics |
