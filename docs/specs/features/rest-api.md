@@ -82,6 +82,7 @@ Operation behavior is #5 (create), #6 (fetch), #7 (delete), #8 (search).
 | Trailing slash vs not                                  | Treat as the same route                                    |
 | `{id}` is not a UUID                                   | `400` from the fetch/delete specs, after auth              |
 | Authenticated request, missing `API_KEY` on the server | `500` per authentication spec                              |
+| Body is valid JSON but not an object                   | `400` `Request body must be a JSON object.` from the operation spec |
 
 ## Observability
 
