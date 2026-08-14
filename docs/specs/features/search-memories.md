@@ -97,7 +97,7 @@ embeddings, tokens, or memory contents.
 
 - Keyword / full-text search
 - Pagination beyond `limit` (no cursor)
-- Choosing the embedding vendor or vector store
+- Changing the embedding model or vector index (see [ADR-0006](../../decisions/0006-embed-with-workers-ai-index-in-vectorize.md))
 
 ## Open Questions
 

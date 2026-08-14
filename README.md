@@ -10,8 +10,9 @@ Open Brain is hosted on Cloudflare
 ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)). REST is the domain
 surface; MCP and the CLI are thin clients
 ([ADR-0004](docs/decisions/0004-rest-as-domain-surface.md)). Memory documents
-live in D1 ([ADR-0005](docs/decisions/0005-store-memories-in-d1.md)); the
-search product is still open.
+live in D1 ([ADR-0005](docs/decisions/0005-store-memories-in-d1.md)). Embeddings
+are Workers AI; vectors live in Vectorize
+([ADR-0006](docs/decisions/0006-embed-with-workers-ai-index-in-vectorize.md)).
 
 ## Packages
 
