@@ -26,6 +26,7 @@ Docs are organized by **what you need**, not by who you are:
 | Understand _why_ something is built a way | [`docs/decisions/`](docs/decisions/) (ADRs)  |
 | Understand how we document                | [`docs/README.md`](docs/README.md)           |
 | Orient an AI agent                        | [`AGENTS.md`](AGENTS.md)                     |
+| Open or review a PR                       | [`.github/pull_request_template.md`](.github/pull_request_template.md) (Risk required) |
 
 ## Build
 

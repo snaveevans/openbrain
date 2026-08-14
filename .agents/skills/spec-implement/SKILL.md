@@ -95,9 +95,11 @@ A large spec declares a **Delivery Plan** (`S1`…). Implement **one slice per P
 
 ## Completion
 
-When the PR's implementation is done:
+When the slice's implementation is done:
 
 - Check off boxes tagged with this slice (`- [ ]` → `- [x]`) only when behavior is implemented **and covered by a test**.
 - Update `status` per SPECS.md conventions.
 - Note unmet criteria and why.
 - If behavior diverged from the spec, remind the user to revise via `spec-author`.
+- Hand off to the `validation-gate` skill to rebase, review, risk-score, and
+  open the PR. Do not open a bare PR after a spec slice unless the user asks.

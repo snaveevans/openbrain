@@ -63,9 +63,12 @@ docs/specs/
 `features/`, fill it out before writing code, then link it here. Prefer the
 `spec-author` skill in `.agents/skills/spec-author/`.
 
-**After a PR merges:** update the matching spec if observable behavior changed.
+**After a PR merges:** the spec should already match — `validation-gate`
+checks the diff against the spec before the PR opens. If something still
+drifted, fix it in a follow-up.
 
 **Implementing a ready spec:** use the `spec-implement` skill. One slice per PR.
+Open the PR with `validation-gate` so Risk and Evidence are filled.
 
 ## Spec lifecycle & acceptance criteria
 

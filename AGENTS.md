@@ -30,6 +30,10 @@ skill before doing the work:
 | `adr-review` | Reviewing an ADR without editing it |
 | `spec-author` | Drafting, documenting, or revising a feature spec |
 | `spec-implement` | Implementing one delivery-plan slice from a ready spec |
+| `validation-gate` | Rebase, review, risk-score, and open the PR |
+| `pr` | Thinner PR open when the gate is overkill |
+| `pr-review` | Adversarial review of a branch or PR |
+| `pr-respond` | Address review comments and red CI |
 
 Specs own behavior. ADRs own decisions. Implementation mechanism belongs in
 neither unless a spec's Observable Contract needs it.
@@ -54,6 +58,27 @@ remote MCP Worker, local MCP, CLI.
 - Time estimates from training data are stale. Prefer the correct solution over
   a shortcut unless the user asks for a dirty pass.
 
+## Opening a PR
+
+Use [`.github/pull_request_template.md`](.github/pull_request_template.md).
+**Risk is required** (`L` / `M` / `H` / `C`) — it is how the human decides how
+long to look. Prefer the `validation-gate` skill after implementation; it
+rebases, runs `pr-review`, scores risk, and fills the template. A bare `pr`
+still scores risk from the same rubric.
+
+Human validation budget:
+
+| Level | Budget |
+| ----- | ------ |
+| **L** | Glance evidence. Do not read the diff. |
+| **M** | Evidence + escalations; spot-check 1–2 hot files. |
+| **H** | Full review + local poke on auth/API/data paths. |
+| **C** | Plan must have been human-approved; deep review required. |
+
+Commit and push the feature branch autonomously. Do not merge without an
+explicit ask.
+
 ## After a feature slice merges
 
-Update the matching spec if observable behavior changed.
+`validation-gate` already checked the spec against the diff. If something
+still drifted on `main`, fix it in a follow-up — do not leave a silent gap.
