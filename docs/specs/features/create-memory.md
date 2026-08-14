@@ -63,7 +63,9 @@ Clients map this route; they do not invent another body.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | `POST /v1/memories` create + embed | #5 | #1 #2 #3 #4 |
 
 ## Edge Cases & Error States
 

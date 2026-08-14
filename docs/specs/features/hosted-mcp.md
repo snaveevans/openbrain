@@ -75,7 +75,7 @@ the mapping and the “no local domain logic” rule.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`). Depends on REST routes existing
+Parked. Phase 2 — #10. Not part of v1 (#11). Depends on REST routes existing
 (or being stubbed behind the same contract).
 
 ## Edge Cases & Error States

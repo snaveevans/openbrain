@@ -60,7 +60,9 @@ validation error (exit non-zero, no request).
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | OpenBrain CLI (`openbrain`) | #9 | #3 #5 #6 #7 #8 |
 
 ## Edge Cases & Error States
 

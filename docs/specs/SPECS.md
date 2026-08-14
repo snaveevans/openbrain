@@ -43,6 +43,9 @@ Operation specs describe REST behavior. Client specs only map to those
 routes. Boxes stay unchecked until a rewrite slice is implemented and tested
 on `main`.
 
+v1 (API + CLI) is epic [#11](https://github.com/snaveevans/openbrain/issues/11).
+MCP clients are phase 2 ([#10](https://github.com/snaveevans/openbrain/issues/10)).
+
 ## Directory Structure
 
 ```

@@ -67,7 +67,11 @@ with the same body.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | `POST /v1/memories/search` (REST boxes) | #8 | #1 #2 #4 #5 |
+
+MCP rendering boxes wait on #10 (phase 2).
 
 ## Edge Cases & Error States
 

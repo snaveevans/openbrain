@@ -61,7 +61,7 @@ Startup log (stderr): `openbrain-mcp running on stdio`.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+Parked. Phase 2 — #10. Not part of v1 (#11).
 
 ## Edge Cases & Error States
 

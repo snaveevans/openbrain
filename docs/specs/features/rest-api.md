@@ -68,8 +68,11 @@ envelope.
 
 ## Delivery Plan
 
-Single slice — the whole surface (`S1`). Operation behavior ships with the
-matching feature spec; this slice is the routing and envelope.
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | Routing, `/v1/health`, auth gate, error envelope | #4 | #3 |
+
+Operation behavior is #5 (create), #6 (fetch), #7 (delete), #8 (search).
 
 ## Edge Cases & Error States
 

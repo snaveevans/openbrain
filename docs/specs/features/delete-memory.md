@@ -51,7 +51,9 @@ Id is the path parameter, not a JSON body.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | `DELETE /v1/memories/{id}` | #7 | #1 #4 #6 |
 
 ## Edge Cases & Error States
 

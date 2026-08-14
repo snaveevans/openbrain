@@ -53,7 +53,11 @@ not look up storage themselves.
 
 ## Delivery Plan
 
-Single slice — the whole feature (`S1`).
+| Slice | Scope | Issue | Depends on |
+| ----- | ----- | ----- | ---------- |
+| `S1`  | `GET /v1/memories/{id}` (REST boxes) | #6 | #1 #4 |
+
+The MCP agent-text box waits on #10 (phase 2).
 
 ## Edge Cases & Error States
 
