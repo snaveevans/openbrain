@@ -29,16 +29,16 @@ Do not implement the rewrite until the relevant ADRs and feature specs exist.
 Project skills live in [`.agents/skills/`](.agents/skills/). Load the matching
 skill before doing the work:
 
-| Skill | Use when |
-| ----- | -------- |
-| `adr-author` | Recording, capturing, or superseding a hard-to-reverse decision |
-| `adr-review` | Reviewing an ADR without editing it |
-| `spec-author` | Drafting, documenting, or revising a feature spec |
-| `spec-implement` | Implementing one delivery-plan slice from a ready spec |
-| `validation-gate` | Rebase, review, risk-score, and open the PR |
-| `pr` | Thinner PR open when the gate is overkill |
-| `pr-review` | Adversarial review of a branch or PR |
-| `pr-respond` | Address review comments and red CI |
+| Skill             | Use when                                                        |
+| ----------------- | --------------------------------------------------------------- |
+| `adr-author`      | Recording, capturing, or superseding a hard-to-reverse decision |
+| `adr-review`      | Reviewing an ADR without editing it                             |
+| `spec-author`     | Drafting, documenting, or revising a feature spec               |
+| `spec-implement`  | Implementing one delivery-plan slice from a ready spec          |
+| `validation-gate` | Rebase, review, risk-score, and open the PR                     |
+| `pr`              | Thinner PR open when the gate is overkill                       |
+| `pr-review`       | Adversarial review of a branch or PR                            |
+| `pr-respond`      | Address review comments and red CI                              |
 
 Specs own behavior. ADRs own decisions. Implementation mechanism belongs in
 neither unless a spec's Observable Contract needs it.
@@ -61,6 +61,9 @@ Intended packages (not all present yet): remote MCP Worker, CLI.
   test on `main`.
 - Do not invent product policy. If a cross-cutting spec does not exist yet, ask.
 - Keep secrets out of git and out of logs. `.env` and `.env.local` are ignored.
+- PRs must stay green on `npm run format:check`, `lint`, `type-check`, `build`,
+  and `test` ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). Merges to
+  `main` also run `scripts/ensure-cloudflare.sh` and deploy the Worker.
 - Time estimates from training data are stale. Prefer the correct solution over
   a shortcut unless the user asks for a dirty pass.
 
@@ -74,11 +77,11 @@ still scores risk from the same rubric.
 
 Human validation budget:
 
-| Level | Budget |
-| ----- | ------ |
-| **L** | Glance evidence. Do not read the diff. |
-| **M** | Evidence + escalations; spot-check 1–2 hot files. |
-| **H** | Full review + local poke on auth/API/data paths. |
+| Level | Budget                                                    |
+| ----- | --------------------------------------------------------- |
+| **L** | Glance evidence. Do not read the diff.                    |
+| **M** | Evidence + escalations; spot-check 1–2 hot files.         |
+| **H** | Full review + local poke on auth/API/data paths.          |
 | **C** | Plan must have been human-approved; deep review required. |
 
 Commit and push the feature branch autonomously. Do not merge without an

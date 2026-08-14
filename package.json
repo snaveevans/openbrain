@@ -7,6 +7,19 @@
   ],
   "scripts": {
     "build": "npm run build --workspace @snaveevans/openbrain-common && npm run build --workspace @snaveevans/openbrain-api --if-present && npm run build --workspace @snaveevans/openbrain-mcp --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "npm run type-check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitest/eslint-plugin": "^1.6.26",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.0.0",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.65.0"
   }
 }

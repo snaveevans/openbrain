@@ -11,7 +11,10 @@ import { jsonError } from "./http.js";
  * Constant-time compare after SHA-256 so length is not leaked.
  * @see https://developers.cloudflare.com/workers/best-practices/workers-best-practices/
  */
-export async function secretsEqual(provided: string, expected: string): Promise<boolean> {
+export async function secretsEqual(
+  provided: string,
+  expected: string,
+): Promise<boolean> {
   const encoder = new TextEncoder();
   const [providedHash, expectedHash] = await Promise.all([
     crypto.subtle.digest("SHA-256", encoder.encode(provided)),
@@ -21,7 +24,7 @@ export async function secretsEqual(provided: string, expected: string): Promise<
   const b = new Uint8Array(expectedHash);
   let diff = 0;
   for (let i = 0; i < a.length; i++) {
-    diff |= a[i]! ^ b[i]!;
+    diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
   }
   return diff === 0;
 }
@@ -31,7 +34,10 @@ function isHealthPath(c: Context): boolean {
   return path === "/v1/health";
 }
 
-export async function requireApiKey(c: Context, next: Next): Promise<Response | void> {
+export async function requireApiKey(
+  c: Context,
+  next: Next,
+): Promise<Response | void> {
   if (isHealthPath(c)) {
     return next();
   }

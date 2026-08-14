@@ -24,20 +24,30 @@ are Workers AI; vectors live in Vectorize
 
 Docs are organized by **what you need**, not by who you are:
 
-| You want to…                              | Read                                         |
-| ----------------------------------------- | -------------------------------------------- |
-| Understand what the product does          | [`docs/specs/SPECS.md`](docs/specs/SPECS.md) |
-| Understand _why_ something is built a way | [`docs/decisions/`](docs/decisions/) (ADRs)  |
-| Understand how we document                | [`docs/README.md`](docs/README.md)           |
-| Orient an AI agent                        | [`AGENTS.md`](AGENTS.md)                     |
+| You want to…                              | Read                                                                                   |
+| ----------------------------------------- | -------------------------------------------------------------------------------------- |
+| Understand what the product does          | [`docs/specs/SPECS.md`](docs/specs/SPECS.md)                                           |
+| Understand _why_ something is built a way | [`docs/decisions/`](docs/decisions/) (ADRs)                                            |
+| Understand how we document                | [`docs/README.md`](docs/README.md)                                                     |
+| Orient an AI agent                        | [`AGENTS.md`](AGENTS.md)                                                               |
 | Open or review a PR                       | [`.github/pull_request_template.md`](.github/pull_request_template.md) (Risk required) |
 
 ## Build
 
 ```bash
 npm install
+npm run format:check
+npm run lint
+npm run type-check
 npm run build
+npm test
 ```
+
+PRs run those same gates in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+Merges to `main` also run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
+`scripts/ensure-cloudflare.sh` creates the D1 database and Vectorize index if they
+are missing, then deploys the Worker. Needs repo secrets
+`CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
 
 ## License
 
