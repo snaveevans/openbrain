@@ -62,6 +62,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build common package
+        run: npm run build --workspace @snaveevans/openbrain-common
+
       - name: Verify Cloudflare credentials are present
         run: |
           test -n "${CLOUDFLARE_API_TOKEN}"
