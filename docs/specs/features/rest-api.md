@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # REST API
 
-**Status:** `review`
+**Status:** `in-progress`
 **Owner:** tyler
 **Related Specs:** [authentication](../cross-cutting/authentication.md), [memory-model](../cross-cutting/memory-model.md), [create-memory](create-memory.md), [fetch-memory](fetch-memory.md), [search-memories](search-memories.md), [delete-memory](delete-memory.md)
 
@@ -32,18 +32,18 @@ same URLs without renaming them.
 
 ## Acceptance Criteria
 
-- [ ] `S1` `GET /v1/health` is unauthenticated and returns readiness JSON with no secrets and no memory contents
-- [ ] `S1` Health payload includes `ok: true` and `service: "openbrain"` (no `auth_provider`)
-- [ ] `S1` Every route below, except `/v1/health`, requires `x-api-key` per [authentication](../cross-cutting/authentication.md)
+- [x] `S1` `GET /v1/health` is unauthenticated and returns readiness JSON with no secrets and no memory contents
+- [x] `S1` Health payload includes `ok: true` and `service: "openbrain"` (no `auth_provider`)
+- [x] `S1` Every route below, except `/v1/health`, requires `x-api-key` per [authentication](../cross-cutting/authentication.md)
 - [ ] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
 - [ ] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
 - [ ] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
 - [ ] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))
-- [ ] `S1` JSON error bodies are `{ error: string }`
-- [ ] `S1` Unknown paths return `404` `{ error: "Not found." }`
-- [ ] `S1` Wrong method on a known path returns `405` `{ error: "Method not allowed." }`
-- [ ] `S1` Unexpected failures return `500` `{ error }` and do not leak the API key
-- [ ] `S1` The API does not publish OAuth discovery routes
+- [x] `S1` JSON error bodies are `{ error: string }`
+- [x] `S1` Unknown paths return `404` `{ error: "Not found." }`
+- [x] `S1` Wrong method on a known path returns `405` `{ error: "Method not allowed." }`
+- [x] `S1` Unexpected failures return `500` `{ error }` and do not leak the API key
+- [x] `S1` The API does not publish OAuth discovery routes
 
 ## Observable Contract
 

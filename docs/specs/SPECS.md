@@ -30,7 +30,7 @@ that API.
 
 | Spec | Area | Status |
 | ---- | ---- | ------ |
-| [rest-api](features/rest-api.md) | HTTP domain surface | `review` |
+| [rest-api](features/rest-api.md) | HTTP domain surface | `in-progress` |
 | [hosted-mcp](features/hosted-mcp.md) | Thin remote MCP client (Cloudflare) | `review` |
 | [local-mcp](features/local-mcp.md) | Thin stdio MCP client | `review` |
 | [cli](features/cli.md) | Thin CLI client | `review` |
