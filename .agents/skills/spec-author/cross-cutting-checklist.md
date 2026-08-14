@@ -6,9 +6,12 @@ Work through each concern. Prefer project cross-cutting specs under `docs/specs/
 
 ## Authentication
 
+See `docs/specs/cross-cutting/authentication.md`. First release is a shared
+`API_KEY` via `x-api-key`, not OAuth.
+
 - Is this feature reachable unauthenticated? If yes, document that explicitly.
-- What identity (if any) is a domain input — subject, email, client id?
-- How does a client handle 401 / expired bearer token / missing OAuth metadata?
+- Confirm the feature does not treat the API key as a subject / owner id.
+- How does a client handle 401 vs a 500 from a missing server `API_KEY`?
 
 ## Authorization
 

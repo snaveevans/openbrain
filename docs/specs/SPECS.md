@@ -18,13 +18,30 @@ relevant cross-cutting specs rather than re-describing the behavior.
 
 | Spec | Concern | Status |
 | ---- | ------- | ------ |
-| _(none yet — add authentication, authorization, validation, errors, and observability as the rewrite specifies them)_ | | |
+| [memory-model](cross-cutting/memory-model.md) | Canonical memory document and agent text format | `review` |
+| [authentication](cross-cutting/authentication.md) | Shared `API_KEY` via `x-api-key` on every request | `review` |
+
+Authorization, validation, errors, and observability are still unnamed as
+cross-cutting specs. [ADR-0004](../decisions/0004-rest-as-domain-surface.md)
+makes REST the domain surface; OAuth, if added later, is a gate in front of
+that API.
 
 ## Feature Specs
 
 | Spec | Area | Status |
 | ---- | ---- | ------ |
-| _(none yet — author these before implementing Cloudflare rewrite slices)_ | | |
+| [rest-api](features/rest-api.md) | HTTP domain surface | `review` |
+| [hosted-mcp](features/hosted-mcp.md) | Thin remote MCP client (Cloudflare) | `review` |
+| [local-mcp](features/local-mcp.md) | Thin stdio MCP client | `review` |
+| [cli](features/cli.md) | Thin CLI client | `review` |
+| [search-memories](features/search-memories.md) | Semantic search | `review` |
+| [fetch-memory](features/fetch-memory.md) | Point lookup | `review` |
+| [create-memory](features/create-memory.md) | Create + embed | `review` |
+| [delete-memory](features/delete-memory.md) | Hard delete | `review` |
+
+Operation specs describe REST behavior. Client specs only map to those
+routes. Boxes stay unchecked until a rewrite slice is implemented and tested
+on `main`.
 
 ## Directory Structure
 

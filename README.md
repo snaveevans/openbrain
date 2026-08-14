@@ -6,12 +6,15 @@ Personal memory store exposed to agents over MCP.
 > AI agent, start with [`AGENTS.md`](AGENTS.md). For everything else, see the
 > [documentation map](#documentation) below.
 
-Open Brain is hosted on Cloudflare ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)).
-Identity, storage, and search are still open follow-up decisions.
+Open Brain is hosted on Cloudflare
+([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)). REST is the domain
+surface; MCP and the CLI are thin clients
+([ADR-0004](docs/decisions/0004-rest-as-domain-surface.md)). Storage and
+search products are still open.
 
 ## Packages
 
-- `packages/openbrain-mcp` - npm MCP server package published as `@snaveevans/openbrain-mcp`
+- `packages/openbrain-mcp` - local stdio MCP client (to be retargeted at REST)
 
 ## Documentation
 

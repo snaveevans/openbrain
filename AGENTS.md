@@ -5,9 +5,11 @@ everything else.
 
 ## What this is
 
-**Open Brain** — a personal memory store exposed to agents over MCP. The ops
-platform is Cloudflare ([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)).
-Identity, storage, and search are not decided yet.
+**Open Brain** — a personal memory store. The ops platform is Cloudflare
+([ADR-0003](docs/decisions/0003-host-on-cloudflare.md)). REST is the only
+domain surface; remote MCP, local MCP, and the CLI are thin clients
+([ADR-0004](docs/decisions/0004-rest-as-domain-surface.md)). Storage and
+search products are not decided yet. First auth is a shared API key.
 
 Do not implement the rewrite until the relevant ADRs and feature specs exist.
 
@@ -36,8 +38,11 @@ neither unless a spec's Observable Contract needs it.
 
 ```
 docs/                     Layered docs (see docs/README.md)
-packages/openbrain-mcp    Local/stdio MCP client package
+packages/openbrain-mcp    Existing local MCP client (will be retargeted at REST)
 ```
+
+Intended packages (not all present yet): REST API, common contracts,
+remote MCP Worker, local MCP, CLI.
 
 ## Working rules
 
