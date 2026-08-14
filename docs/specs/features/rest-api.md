@@ -35,7 +35,7 @@ same URLs without renaming them.
 - [x] `S1` `GET /v1/health` is unauthenticated and returns readiness JSON with no secrets and no memory contents
 - [x] `S1` Health payload includes `ok: true` and `service: "openbrain"` (no `auth_provider`)
 - [x] `S1` Every route below, except `/v1/health`, requires `x-api-key` per [authentication](../cross-cutting/authentication.md)
-- [ ] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
+- [x] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
 - [ ] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
 - [ ] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
 - [ ] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))

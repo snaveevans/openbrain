@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Create Memory
 
-**Status:** `review`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -27,17 +27,17 @@ forward this operation ([ADR-0004](../../decisions/0004-rest-as-domain-surface.m
 
 ## Acceptance Criteria
 
-- [ ] `S1` A request with non-empty `content` creates one memory and returns it
-- [ ] `S1` `content` is trimmed before store and embed
-- [ ] `S1` Omitted `source` becomes `"manual"`
-- [ ] `S1` Omitted `metadata` becomes `{}`
-- [ ] `S1` Provided `metadata` must be a JSON object; `null` or an array is rejected
-- [ ] `S1` Empty or whitespace-only `content` is rejected as validation failure; nothing is stored
-- [ ] `S1` On success the memory has an embedding, `embedding_model`, and `embedded_at`
-- [ ] `S1` HTTP success status is **201** with body `{ memory }`
-- [ ] `S1` The returned memory includes `id`, `content`, `source`, `metadata`, `embedding_model`, `created_at`, `updated_at`, `embedded_at`
-- [ ] `S1` Embed or store failure does not leave a successful 201; the caller sees `500`
-- [ ] `S1` Auth is [authentication](../cross-cutting/authentication.md); the key is not stored on the memory
+- [x] `S1` A request with non-empty `content` creates one memory and returns it
+- [x] `S1` `content` is trimmed before store and embed
+- [x] `S1` Omitted `source` becomes `"manual"`
+- [x] `S1` Omitted `metadata` becomes `{}`
+- [x] `S1` Provided `metadata` must be a JSON object; `null` or an array is rejected
+- [x] `S1` Empty or whitespace-only `content` is rejected as validation failure; nothing is stored
+- [x] `S1` On success the memory has an embedding, `embedding_model`, and `embedded_at`
+- [x] `S1` HTTP success status is **201** with body `{ memory }`
+- [x] `S1` The returned memory includes `id`, `content`, `source`, `metadata`, `embedding_model`, `created_at`, `updated_at`, `embedded_at`
+- [x] `S1` Embed or store failure does not leave a successful 201; the caller sees `500`
+- [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); the key is not stored on the memory
 
 ## Observable Contract
 

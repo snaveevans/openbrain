@@ -27,4 +27,7 @@
       "index_name": "openbrain-memories",
     },
   ],
+  "ai": {
+    "binding": "AI",
+  },
 }

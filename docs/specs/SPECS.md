@@ -36,7 +36,7 @@ that API.
 | [cli](features/cli.md) | Thin CLI client | `review` |
 | [search-memories](features/search-memories.md) | Semantic search | `review` |
 | [fetch-memory](features/fetch-memory.md) | Point lookup | `review` |
-| [create-memory](features/create-memory.md) | Create + embed | `review` |
+| [create-memory](features/create-memory.md) | Create + embed | `active` |
 | [delete-memory](features/delete-memory.md) | Hard delete | `review` |
 
 Operation specs describe REST behavior. Client specs only map to those

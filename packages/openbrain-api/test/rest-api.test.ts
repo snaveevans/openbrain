@@ -107,13 +107,18 @@ describe("API_KEY gate", () => {
 
   it("accepts a trimmed matching key on every memory route", async () => {
     const headers = { [API_KEY_HEADER]: `  ${KEY}  ` };
-    const routes: Array<[string, string]> = [
-      ["POST", "/v1/memories"],
+    const create = await request("/v1/memories", { method: "POST", headers });
+    expect(create.status).toBe(400);
+    await expect(create.json()).resolves.toEqual({
+      error: "Request body must be valid JSON.",
+    });
+
+    const stubs: Array<[string, string]> = [
       ["POST", "/v1/memories/search"],
       ["GET", "/v1/memories/00000000-0000-4000-8000-000000000001"],
       ["DELETE", "/v1/memories/00000000-0000-4000-8000-000000000001"],
     ];
-    for (const [method, path] of routes) {
+    for (const [method, path] of stubs) {
       const res = await request(path, { method, headers });
       expect(res.status, `${method} ${path}`).toBe(404);
       await expect(res.json()).resolves.toEqual({ error: ERROR_NOT_FOUND });
