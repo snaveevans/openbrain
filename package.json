@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "type-check": "npm run type-check --workspaces --if-present",
+    "type-check": "npm run build --workspace @snaveevans/openbrain-common && npm run type-check --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {
