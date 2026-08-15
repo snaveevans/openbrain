@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Delete Memory
 
-**Status:** `in-progress`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -34,7 +34,7 @@ the behavior. Thin clients only forward it
 - [x] `S1` A UUID v4 that has no document and no index entry is **404** `{ error: "Memory not found." }`; neither store is written
 - [x] `S1` A path `id` that is not a UUID v4 is **400** with `` `id` must be a valid UUID v4. ``; nothing is deleted; neither store is queried
 - [x] `S1` The path `id` is not rewritten; lookup is an exact match on the string as sent
-- [ ] `S1` After a successful delete, fetch of that id is not-found and search no longer returns it
+- [x] `S1` After a successful delete, fetch of that id is not-found and search no longer returns it
 - [x] `S1` A failure that removes only one side is **500**; leftovers are possible. A later `DELETE` of the same id removes the remaining side
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); it runs before the UUID check and before any store or index work
 

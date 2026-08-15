@@ -4,6 +4,7 @@ import type {
   MemoryStore,
   VectorIndex,
   VectorMatch,
+  VectorQuery,
 } from "@snaveevans/openbrain-common";
 
 import type { CreateDeps } from "../src/env.js";
@@ -18,9 +19,11 @@ export class MemoryStoreFake implements MemoryStore {
   failNextInsert = false;
   failNextGet = false;
   failNextDelete = false;
+  failNextGetByIds = false;
   gets = 0;
   inserts = 0;
   deletes = 0;
+  getByIdsCalls = 0;
 
   async insert(document: MemoryDocument): Promise<MemoryDocument> {
     this.inserts += 1;
@@ -55,6 +58,11 @@ export class MemoryStoreFake implements MemoryStore {
   }
 
   async getByIds(ids: readonly string[]): Promise<MemoryDocument[]> {
+    this.getByIdsCalls += 1;
+    if (this.failNextGetByIds) {
+      this.failNextGetByIds = false;
+      throw new Error("store hydrate failed");
+    }
     return ids.flatMap((id) => {
       const row = this.rows.get(id);
       return row ? [row] : [];
@@ -87,12 +95,18 @@ export class EmbedderFake implements Embedder {
 }
 
 export class VectorIndexFake implements VectorIndex {
-  readonly records = new Map<string, { values: number[]; source: string }>();
+  readonly records = new Map<
+    string,
+    { values: number[]; source: string; score?: number }
+  >();
   failNextUpsert = false;
   failNextDelete = false;
+  failNextQuery = false;
   upserts = 0;
   deletes = 0;
+  queries = 0;
   hasCalls = 0;
+  lastQuery: VectorQuery | undefined;
 
   async upsert(record: { id: string; values: number[]; source: string }) {
     this.upserts += 1;
@@ -103,6 +117,7 @@ export class VectorIndexFake implements VectorIndex {
     this.records.set(record.id, {
       values: record.values,
       source: record.source,
+      score: 0,
     });
   }
 
@@ -120,8 +135,21 @@ export class VectorIndexFake implements VectorIndex {
     return this.records.has(id);
   }
 
-  async query(): Promise<VectorMatch[]> {
-    return [];
+  async query(input: VectorQuery): Promise<VectorMatch[]> {
+    this.queries += 1;
+    this.lastQuery = input;
+    if (this.failNextQuery) {
+      this.failNextQuery = false;
+      throw new Error("index query failed");
+    }
+    return [...this.records.entries()]
+      .filter(
+        ([, record]) =>
+          input.source === undefined || record.source === input.source,
+      )
+      .map(([id, record]) => ({ id, score: record.score ?? 0 }))
+      .sort((left, right) => right.score - left.score)
+      .slice(0, input.limit);
   }
 }
 

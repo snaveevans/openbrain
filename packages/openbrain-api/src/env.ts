@@ -24,6 +24,12 @@ export type DeleteDeps = {
   index: VectorIndex;
 };
 
+export type SearchDeps = {
+  store: MemoryStore;
+  embedder: Embedder;
+  index: VectorIndex;
+};
+
 export type AppOptions = {
   create?: CreateDeps;
   store?: MemoryStore;

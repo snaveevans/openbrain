@@ -18,10 +18,15 @@ import {
 } from "./create.js";
 import { D1MemoryStore } from "./d1-store.js";
 import { deleteMemory, productionDeleteDeps } from "./delete.js";
-import type { ApiBindings, AppOptions, DeleteDeps } from "./env.js";
+import type { ApiBindings, AppOptions, DeleteDeps, SearchDeps } from "./env.js";
 import { ValidationError } from "./errors.js";
 import { fetchMemory, LookupError, parseMemoryId } from "./fetch.js";
 import { CACHE_CONTROL_NO_STORE, jsonError } from "./http.js";
+import {
+  parseSearchBody,
+  productionSearchDeps,
+  searchMemories,
+} from "./search.js";
 import { VectorizeMemoryIndex } from "./vectorize-index.js";
 import { WorkersAiEmbedder } from "./workers-ai-embedder.js";
 
@@ -72,6 +77,36 @@ export function createApp(options: AppOptions = {}) {
     return c.json(created, 201);
   });
 
+  app.post("/v1/memories/search", async (c) => {
+    let raw: unknown;
+    try {
+      raw = await c.req.json();
+    } catch {
+      return jsonError(c, 400, ERROR_INVALID_JSON);
+    }
+
+    let input;
+    try {
+      input = parseSearchBody(raw);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return jsonError(c, 400, error.message);
+      }
+      throw error;
+    }
+
+    const searched = await searchMemories(
+      input,
+      resolveSearchDeps(c.env, options),
+    );
+    return c.json(searched);
+  });
+
+  // Keep `/search` off the `:id` routes so GET/DELETE are 405, not a UUID 400.
+  app.on(["GET", "PUT", "PATCH", "DELETE"], "/v1/memories/search", (c) =>
+    jsonError(c, 405, ERROR_METHOD_NOT_ALLOWED),
+  );
+
   app.get("/v1/memories/:id", async (c) => {
     let id: string;
     try {
@@ -120,9 +155,6 @@ export function createApp(options: AppOptions = {}) {
     }
   });
 
-  // Remaining operation behavior is issue #8.
-  app.post("/v1/memories/search", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
-
   app.notFound((c) => jsonError(c, 404, ERROR_NOT_FOUND));
 
   app.onError((err, c) => {
@@ -169,6 +201,24 @@ function resolveDeleteDeps(env: ApiBindings, options: AppOptions): DeleteDeps {
   return productionDeleteDeps(
     resolveStore(env, options),
     resolveIndex(env, options),
+  );
+}
+
+function resolveSearchDeps(env: ApiBindings, options: AppOptions): SearchDeps {
+  if (options.create) {
+    return productionSearchDeps(
+      resolveStore(env, options),
+      options.create.embedder,
+      resolveIndex(env, options),
+    );
+  }
+  if (!env.DB || !env.AI || !env.VECTORIZE) {
+    throw new Error("Storage bindings are not configured.");
+  }
+  return productionSearchDeps(
+    new D1MemoryStore(env.DB),
+    new WorkersAiEmbedder(env.AI),
+    new VectorizeMemoryIndex(env.VECTORIZE),
   );
 }
 

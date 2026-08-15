@@ -18,6 +18,10 @@ import {
   ERROR_METHOD_NOT_ALLOWED,
   ERROR_NOT_FOUND,
   ERROR_QUERY_EMPTY,
+  ERROR_QUERY_TOO_LARGE,
+  ERROR_LIMIT_NUMBER,
+  ERROR_SOURCE_STRING,
+  ERROR_THRESHOLD_RANGE,
   ERROR_UNAUTHORIZED,
   HEALTH_SERVICE,
   MAX_SEARCH_LIMIT,
@@ -67,6 +71,16 @@ test("auth and envelope constants match the specs", () => {
   assert.equal(ERROR_MEMORY_TOO_LARGE, "Memory is too large to store.");
   assert.equal(ERROR_ID_UUID, "`id` must be a valid UUID v4.");
   assert.equal(ERROR_QUERY_EMPTY, "`query` must be a non-empty string.");
+  assert.equal(ERROR_QUERY_TOO_LARGE, "`query` is too large.");
+  assert.equal(ERROR_LIMIT_NUMBER, "`limit` must be a number when provided.");
+  assert.equal(
+    ERROR_THRESHOLD_RANGE,
+    "`threshold` must be a number in [0, 1].",
+  );
+  assert.equal(
+    ERROR_SOURCE_STRING,
+    "`source` must be a non-empty string when provided.",
+  );
 });
 
 test("HTTP envelopes type-check against the REST contract", () => {
