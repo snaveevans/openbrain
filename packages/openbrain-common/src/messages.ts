@@ -11,5 +11,5 @@ export const ERROR_INVALID_JSON = "Request body must be valid JSON.";
 export const ERROR_BODY_NOT_OBJECT = "Request body must be a JSON object.";
 export const ERROR_CONTENT_TOO_LARGE = "`content` is too large.";
 export const ERROR_MEMORY_TOO_LARGE = "Memory is too large to store.";
-export const ERROR_ID_UUID = "`id` must be a valid UUID.";
+export const ERROR_ID_UUID = "`id` must be a valid UUID v4.";
 export const ERROR_QUERY_EMPTY = "`query` must be a non-empty string.";

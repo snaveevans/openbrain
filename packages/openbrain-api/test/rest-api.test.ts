@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 import { createApp } from "../src/app.js";
 import { secretsEqual } from "../src/auth.js";
 import { CACHE_CONTROL_NO_STORE } from "../src/http.js";
+import { createDeps } from "./fakes.js";
 
 const KEY = "test-api-key";
 const env = { API_KEY: KEY };
@@ -113,9 +114,19 @@ describe("API_KEY gate", () => {
       error: "Request body must be valid JSON.",
     });
 
+    const fakes = createDeps();
+    const fetch = await createApp({ store: fakes.store }).request(
+      "/v1/memories/00000000-0000-4000-8000-000000000001",
+      { method: "GET", headers },
+      env,
+    );
+    expect(fetch.status).toBe(404);
+    await expect(fetch.json()).resolves.toEqual({
+      error: "Memory not found.",
+    });
+
     const stubs: Array<[string, string]> = [
       ["POST", "/v1/memories/search"],
-      ["GET", "/v1/memories/00000000-0000-4000-8000-000000000001"],
       ["DELETE", "/v1/memories/00000000-0000-4000-8000-000000000001"],
     ];
     for (const [method, path] of stubs) {

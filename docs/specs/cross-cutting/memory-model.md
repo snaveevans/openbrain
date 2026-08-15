@@ -29,14 +29,14 @@ A **memory** is one durable record:
 
 | Field | Required | Meaning |
 | ----- | -------- | ------- |
-| `id` | yes | Stable UUID assigned at create time |
+| `id` | yes | Stable UUID v4 assigned at create time |
 | `content` | yes | Non-empty text after trim. This is what is embedded and what agents read. |
 | `source` | yes | Origin label. Default `"manual"` when the caller omits it. |
 | `metadata` | yes | JSON object (not an array, not `null`). Default `{}`. |
 | `created_at` | yes | Creation timestamp |
 | `updated_at` | yes | Last-write timestamp |
-| `embedding_model` | no | Model used to embed `content`, when an embedding exists |
-| `embedded_at` | no | When the current embedding was written |
+| `embedding_model` | yes | Model used to embed `content`. Present on every stored memory. |
+| `embedded_at` | yes | When the current embedding was written. Present on every stored memory. |
 | `similarity` | search only | Query-time score in `[0, 1]`. Not stored. Higher is closer. |
 
 Invariants recovered from the old store:
@@ -45,8 +45,9 @@ Invariants recovered from the old store:
 - The store is **not partitioned by subject**. Any authorized caller sees the
   same memories. Authorization decides *whether* you may use the store, not
   *which rows* you see.
-- Semantic search only considers memories that have an embedding. A memory
-  without one is still fetchable and deletable.
+- Create does not acknowledge a memory until the document and its embedding
+  both succeed. Every stored memory has `embedding_model` and `embedded_at`.
+  Semantic search ranks those vectors.
 - `similarity` is computed at query time (historically `1 - cosine distance`).
   Callers must not assume a particular embedding vendor.
 
@@ -58,8 +59,8 @@ id: <uuid>
 source: <source>
 created_at: <timestamp>
 updated_at: <timestamp>
-embedded_at: <timestamp>          # omitted when absent
-embedding_model: <model>          # omitted when absent
+embedded_at: <timestamp>
+embedding_model: <model>
 similarity: <0.0000>              # search hits only, four decimal places
 metadata: <json>
 
@@ -82,8 +83,8 @@ Every memory feature spec MUST document:
 
 | Feature | Deviation | Reason |
 | ------- | --------- | ------ |
-| MCP `search_memories` (and HTTP search hits) | Includes `similarity`; may omit `embedded_at` | Ranked hit, not a full record |
-| MCP `fetch` / HTTP fetch | Returns `embedded_at`; no `similarity` | Point lookup |
+| MCP `search_memories` (and HTTP search hits) | Includes `similarity` | Ranked hit, not a full record |
+| MCP `fetch` / HTTP fetch | No `similarity` | Point lookup |
 
 ## Anti-Patterns
 

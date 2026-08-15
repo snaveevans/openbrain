@@ -65,7 +65,7 @@ test("auth and envelope constants match the specs", () => {
   assert.equal(ERROR_BODY_NOT_OBJECT, "Request body must be a JSON object.");
   assert.equal(ERROR_CONTENT_TOO_LARGE, "`content` is too large.");
   assert.equal(ERROR_MEMORY_TOO_LARGE, "Memory is too large to store.");
-  assert.equal(ERROR_ID_UUID, "`id` must be a valid UUID.");
+  assert.equal(ERROR_ID_UUID, "`id` must be a valid UUID v4.");
   assert.equal(ERROR_QUERY_EMPTY, "`query` must be a non-empty string.");
 });
 

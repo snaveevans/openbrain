@@ -35,7 +35,7 @@ that API.
 | [local-mcp](features/local-mcp.md) | Thin stdio MCP client | `review` |
 | [cli](features/cli.md) | Thin CLI client | `review` |
 | [search-memories](features/search-memories.md) | Semantic search | `review` |
-| [fetch-memory](features/fetch-memory.md) | Point lookup | `review` |
+| [fetch-memory](features/fetch-memory.md) | Point lookup | `in-progress` |
 | [create-memory](features/create-memory.md) | Create + embed | `active` |
 | [delete-memory](features/delete-memory.md) | Hard delete | `review` |
 
