@@ -42,6 +42,7 @@ interface VectorizeQueryOptions {
 interface VectorizeIndex {
   upsert(vectors: VectorizeVector[]): Promise<unknown>;
   deleteByIds(ids: string[]): Promise<unknown>;
+  getByIds(ids: string[]): Promise<VectorizeVector[]>;
   query(
     vector: number[],
     options?: VectorizeQueryOptions,

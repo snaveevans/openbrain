@@ -37,7 +37,7 @@ same URLs without renaming them.
 - [x] `S1` Every route below, except `/v1/health`, requires `x-api-key` per [authentication](../cross-cutting/authentication.md)
 - [x] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
 - [x] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
-- [ ] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
+- [x] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
 - [ ] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))
 - [x] `S1` JSON error bodies are `{ error: string }`
 - [x] `S1` Unknown paths return `404` `{ error: "Not found." }`

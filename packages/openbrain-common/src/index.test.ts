@@ -148,6 +148,9 @@ test("in-memory fakes satisfy the store, embedder, and index ports", async () =>
     async deleteById(id) {
       vectors.delete(id);
     },
+    async has(id) {
+      return vectors.has(id);
+    },
     async query(input) {
       return [...vectors.entries()]
         .filter(

@@ -5,6 +5,7 @@ import {
   HEALTH_SERVICE,
   type HealthResponse,
   type MemoryStore,
+  type VectorIndex,
 } from "@snaveevans/openbrain-common";
 import { Hono } from "hono";
 import { methodNotAllowed } from "hono/method-not-allowed";
@@ -16,7 +17,8 @@ import {
   productionCreateDeps,
 } from "./create.js";
 import { D1MemoryStore } from "./d1-store.js";
-import type { ApiBindings, AppOptions } from "./env.js";
+import { deleteMemory, productionDeleteDeps } from "./delete.js";
+import type { ApiBindings, AppOptions, DeleteDeps } from "./env.js";
 import { ValidationError } from "./errors.js";
 import { fetchMemory, LookupError, parseMemoryId } from "./fetch.js";
 import { CACHE_CONTROL_NO_STORE, jsonError } from "./http.js";
@@ -92,9 +94,34 @@ export function createApp(options: AppOptions = {}) {
     }
   });
 
-  // Remaining operation behavior is issues #7–#8.
+  app.delete("/v1/memories/:id", async (c) => {
+    let id: string;
+    try {
+      id = parseMemoryId(c.req.param("id"));
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return jsonError(c, 400, error.message);
+      }
+      throw error;
+    }
+
+    try {
+      const result = await deleteMemory(id, resolveDeleteDeps(c.env, options));
+      if (result.kind === "deleted") {
+        return c.json(result.body);
+      }
+      // Orphan-index envelope is an Open Question. The leftover vector is gone.
+      return jsonError(c, 500, "Internal error.");
+    } catch (error) {
+      if (error instanceof LookupError) {
+        return jsonError(c, 404, error.message);
+      }
+      throw error;
+    }
+  });
+
+  // Remaining operation behavior is issue #8.
   app.post("/v1/memories/search", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
-  app.delete("/v1/memories/:id", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
 
   app.notFound((c) => jsonError(c, 404, ERROR_NOT_FOUND));
 
@@ -123,6 +150,26 @@ function resolveStore(env: ApiBindings, options: AppOptions): MemoryStore {
     throw new Error("Storage bindings are not configured.");
   }
   return new D1MemoryStore(env.DB);
+}
+
+function resolveIndex(env: ApiBindings, options: AppOptions): VectorIndex {
+  if (options.index) {
+    return options.index;
+  }
+  if (options.create) {
+    return options.create.index;
+  }
+  if (!env.VECTORIZE) {
+    throw new Error("Storage bindings are not configured.");
+  }
+  return new VectorizeMemoryIndex(env.VECTORIZE);
+}
+
+function resolveDeleteDeps(env: ApiBindings, options: AppOptions): DeleteDeps {
+  return productionDeleteDeps(
+    resolveStore(env, options),
+    resolveIndex(env, options),
+  );
 }
 
 function runtimeCreateDeps(env: ApiBindings) {
