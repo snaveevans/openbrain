@@ -16,8 +16,13 @@ export const SECOND_ID = "00000000-0000-4000-8000-000000000002";
 export class MemoryStoreFake implements MemoryStore {
   readonly rows = new Map<string, MemoryDocument>();
   failNextInsert = false;
+  failNextGet = false;
+  gets = 0;
+  inserts = 0;
+  deletes = 0;
 
   async insert(document: MemoryDocument): Promise<MemoryDocument> {
+    this.inserts += 1;
     if (this.failNextInsert) {
       this.failNextInsert = false;
       throw new Error("store write failed");
@@ -27,10 +32,16 @@ export class MemoryStoreFake implements MemoryStore {
   }
 
   async getById(id: string): Promise<MemoryDocument | null> {
+    this.gets += 1;
+    if (this.failNextGet) {
+      this.failNextGet = false;
+      throw new Error("store read failed");
+    }
     return this.rows.get(id) ?? null;
   }
 
   async deleteById(id: string): Promise<MemoryDocument | null> {
+    this.deletes += 1;
     const existing = this.rows.get(id) ?? null;
     if (existing) {
       this.rows.delete(id);

@@ -35,7 +35,7 @@ this ([ADR-0004](../../decisions/0004-rest-as-domain-surface.md)).
 - [ ] `S1` When `limit` is provided, it is an integer clamped to **1–25**
 - [ ] `S1` When `threshold` is provided, it is a number in `[0, 1]`; hits below it are dropped after ranking
 - [ ] `S1` When `source` is provided, only memories with that exact `source` are eligible
-- [ ] `S1` Memories without an embedding never appear in results
+- [ ] `S1` A leftover row without an embedding (create does not acknowledge one) never appears in results
 - [ ] `S1` Zero eligible hits is a **success** with an empty match list, not an error
 - [ ] `S1` An empty or whitespace-only `query` is rejected as validation failure
 - [ ] `S1` Auth is [authentication](../cross-cutting/authentication.md)
@@ -78,7 +78,7 @@ MCP rendering boxes wait on #10 (phase 2).
 | Scenario                                  | Expected Behavior                   |
 | ----------------------------------------- | ----------------------------------- |
 | Store is empty                            | Success, zero hits                  |
-| All rows lack embeddings                  | Success, zero hits                  |
+| Leftover rows without embeddings          | Success, those rows are not hits    |
 | `limit` is a float                        | Truncated toward zero, then clamped |
 | `threshold` omitted                       | All ranked hits up to `limit`       |
 | `threshold` set and every hit is below it | Success, zero hits                  |

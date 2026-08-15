@@ -16,9 +16,10 @@ date: 2026-08-14
 ## Summary
 
 An authorized caller writes a new memory into the store. The REST API trims
-`content`, fills defaults, embeds the text before acknowledging success, and
-returns the new record. Thin clients (CLI, local MCP, remote MCP) only
-forward this operation ([ADR-0004](../../decisions/0004-rest-as-domain-surface.md)).
+`content`, fills defaults, assigns a UUID v4, embeds the text before
+acknowledging success, and returns the new record. Thin clients (CLI, local
+MCP, remote MCP) only forward this operation
+([ADR-0004](../../decisions/0004-rest-as-domain-surface.md)).
 
 ## User Stories
 

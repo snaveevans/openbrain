@@ -15,20 +15,14 @@ import {
 
 import { isoNow } from "./clock.js";
 import type { CreateDeps } from "./env.js";
+import { ValidationError } from "./errors.js";
 import {
   estimatedMemoryRowBytes,
   MAX_EMBED_CONTENT_CHARS,
   MAX_MEMORY_ROW_BYTES,
 } from "./limits.js";
 
-export class ValidationError extends Error {
-  readonly status = 400 as const;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "ValidationError";
-  }
-}
+export { ValidationError } from "./errors.js";
 
 export type CreateMemoryInput = {
   content: string;

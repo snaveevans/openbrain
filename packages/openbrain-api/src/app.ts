@@ -4,6 +4,7 @@ import {
   ERROR_NOT_FOUND,
   HEALTH_SERVICE,
   type HealthResponse,
+  type MemoryStore,
 } from "@snaveevans/openbrain-common";
 import { Hono } from "hono";
 import { methodNotAllowed } from "hono/method-not-allowed";
@@ -13,10 +14,11 @@ import {
   createMemory,
   parseCreateBody,
   productionCreateDeps,
-  ValidationError,
 } from "./create.js";
 import { D1MemoryStore } from "./d1-store.js";
 import type { ApiBindings, AppOptions } from "./env.js";
+import { ValidationError } from "./errors.js";
+import { fetchMemory, LookupError, parseMemoryId } from "./fetch.js";
 import { CACHE_CONTROL_NO_STORE, jsonError } from "./http.js";
 import { VectorizeMemoryIndex } from "./vectorize-index.js";
 import { WorkersAiEmbedder } from "./workers-ai-embedder.js";
@@ -68,9 +70,30 @@ export function createApp(options: AppOptions = {}) {
     return c.json(created, 201);
   });
 
-  // Remaining operation behavior is issues #6–#8.
+  app.get("/v1/memories/:id", async (c) => {
+    let id: string;
+    try {
+      id = parseMemoryId(c.req.param("id"));
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return jsonError(c, 400, error.message);
+      }
+      throw error;
+    }
+
+    try {
+      const fetched = await fetchMemory(id, resolveStore(c.env, options));
+      return c.json(fetched);
+    } catch (error) {
+      if (error instanceof LookupError) {
+        return jsonError(c, 404, error.message);
+      }
+      throw error;
+    }
+  });
+
+  // Remaining operation behavior is issues #7–#8.
   app.post("/v1/memories/search", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
-  app.get("/v1/memories/:id", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
   app.delete("/v1/memories/:id", (c) => jsonError(c, 404, ERROR_NOT_FOUND));
 
   app.notFound((c) => jsonError(c, 404, ERROR_NOT_FOUND));
@@ -87,6 +110,19 @@ export function createApp(options: AppOptions = {}) {
   });
 
   return app;
+}
+
+function resolveStore(env: ApiBindings, options: AppOptions): MemoryStore {
+  if (options.store) {
+    return options.store;
+  }
+  if (options.create) {
+    return options.create.store;
+  }
+  if (!env.DB) {
+    throw new Error("Storage bindings are not configured.");
+  }
+  return new D1MemoryStore(env.DB);
 }
 
 function runtimeCreateDeps(env: ApiBindings) {

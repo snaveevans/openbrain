@@ -21,4 +21,5 @@ export type CreateDeps = {
 
 export type AppOptions = {
   create?: CreateDeps;
+  store?: MemoryStore;
 };

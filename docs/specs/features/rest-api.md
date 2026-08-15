@@ -36,7 +36,7 @@ same URLs without renaming them.
 - [x] `S1` Health payload includes `ok: true` and `service: "openbrain"` (no `auth_provider`)
 - [x] `S1` Every route below, except `/v1/health`, requires `x-api-key` per [authentication](../cross-cutting/authentication.md)
 - [x] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
-- [ ] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
+- [x] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
 - [ ] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
 - [ ] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))
 - [x] `S1` JSON error bodies are `{ error: string }`
@@ -80,7 +80,7 @@ Operation behavior is #5 (create), #6 (fetch), #7 (delete), #8 (search).
 | ------------------------------------------------------ | ---------------------------------------------------------- |
 | `/v1/health` while storage is down                     | `200` if the process is up. Health does not probe storage. |
 | Trailing slash vs not                                  | Treat as the same route                                    |
-| `{id}` is not a UUID                                   | `400` from the fetch/delete specs, after auth              |
+| `{id}` is not a UUID v4                                | `400` from the fetch/delete specs, after auth. Path is not rewritten. |
 | Authenticated request, missing `API_KEY` on the server | `500` per authentication spec                              |
 | Body is valid JSON but not an object                   | `400` `Request body must be a JSON object.` from the operation spec |
 
