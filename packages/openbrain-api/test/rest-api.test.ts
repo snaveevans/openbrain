@@ -125,15 +125,25 @@ describe("API_KEY gate", () => {
       error: "Memory not found.",
     });
 
-    const stubs: Array<[string, string]> = [
-      ["POST", "/v1/memories/search"],
-      ["DELETE", "/v1/memories/00000000-0000-4000-8000-000000000001"],
-    ];
-    for (const [method, path] of stubs) {
-      const res = await request(path, { method, headers });
-      expect(res.status, `${method} ${path}`).toBe(404);
-      await expect(res.json()).resolves.toEqual({ error: ERROR_NOT_FOUND });
-    }
+    const deleted = await createApp({
+      store: fakes.store,
+      index: fakes.index,
+    }).request(
+      "/v1/memories/00000000-0000-4000-8000-000000000001",
+      { method: "DELETE", headers },
+      env,
+    );
+    expect(deleted.status).toBe(404);
+    await expect(deleted.json()).resolves.toEqual({
+      error: "Memory not found.",
+    });
+
+    const search = await request("/v1/memories/search", {
+      method: "POST",
+      headers,
+    });
+    expect(search.status).toBe(404);
+    await expect(search.json()).resolves.toEqual({ error: ERROR_NOT_FOUND });
   });
 });
 

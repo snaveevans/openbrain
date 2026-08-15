@@ -17,6 +17,7 @@ export class MemoryStoreFake implements MemoryStore {
   readonly rows = new Map<string, MemoryDocument>();
   failNextInsert = false;
   failNextGet = false;
+  failNextDelete = false;
   gets = 0;
   inserts = 0;
   deletes = 0;
@@ -42,6 +43,10 @@ export class MemoryStoreFake implements MemoryStore {
 
   async deleteById(id: string): Promise<MemoryDocument | null> {
     this.deletes += 1;
+    if (this.failNextDelete) {
+      this.failNextDelete = false;
+      throw new Error("store delete failed");
+    }
     const existing = this.rows.get(id) ?? null;
     if (existing) {
       this.rows.delete(id);
@@ -84,8 +89,10 @@ export class EmbedderFake implements Embedder {
 export class VectorIndexFake implements VectorIndex {
   readonly records = new Map<string, { values: number[]; source: string }>();
   failNextUpsert = false;
+  failNextDelete = false;
   upserts = 0;
   deletes = 0;
+  hasCalls = 0;
 
   async upsert(record: { id: string; values: number[]; source: string }) {
     this.upserts += 1;
@@ -101,7 +108,16 @@ export class VectorIndexFake implements VectorIndex {
 
   async deleteById(id: string) {
     this.deletes += 1;
+    if (this.failNextDelete) {
+      this.failNextDelete = false;
+      throw new Error("index delete failed");
+    }
     this.records.delete(id);
+  }
+
+  async has(id: string) {
+    this.hasCalls += 1;
+    return this.records.has(id);
   }
 
   async query(): Promise<VectorMatch[]> {

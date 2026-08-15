@@ -22,6 +22,11 @@ export class VectorizeMemoryIndex implements VectorIndex {
     await this.index.deleteByIds([id]);
   }
 
+  async has(id: string): Promise<boolean> {
+    const found = await this.index.getByIds([id]);
+    return found.some((vector) => vector.id === id);
+  }
+
   async query(input: VectorQuery): Promise<VectorMatch[]> {
     const result = await this.index.query(input.values, {
       topK: input.limit,

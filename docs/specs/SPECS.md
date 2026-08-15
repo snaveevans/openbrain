@@ -37,7 +37,7 @@ that API.
 | [search-memories](features/search-memories.md) | Semantic search | `review` |
 | [fetch-memory](features/fetch-memory.md) | Point lookup | `in-progress` |
 | [create-memory](features/create-memory.md) | Create + embed | `active` |
-| [delete-memory](features/delete-memory.md) | Hard delete | `review` |
+| [delete-memory](features/delete-memory.md) | Hard delete | `in-progress` |
 
 Operation specs describe REST behavior. Client specs only map to those
 routes. Boxes stay unchecked until a rewrite slice is implemented and tested

@@ -53,5 +53,7 @@ export interface VectorMatch {
 export interface VectorIndex {
   upsert(record: VectorRecord): Promise<void>;
   deleteById(id: string): Promise<void>;
+  /** True when the index holds a vector for this id. */
+  has(id: string): Promise<boolean>;
   query(input: VectorQuery): Promise<VectorMatch[]>;
 }

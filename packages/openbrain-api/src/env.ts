@@ -19,7 +19,13 @@ export type CreateDeps = {
   id: () => string;
 };
 
+export type DeleteDeps = {
+  store: MemoryStore;
+  index: VectorIndex;
+};
+
 export type AppOptions = {
   create?: CreateDeps;
   store?: MemoryStore;
+  index?: VectorIndex;
 };
