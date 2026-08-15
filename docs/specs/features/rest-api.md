@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # REST API
 
-**Status:** `in-progress`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [authentication](../cross-cutting/authentication.md), [memory-model](../cross-cutting/memory-model.md), [create-memory](create-memory.md), [fetch-memory](fetch-memory.md), [search-memories](search-memories.md), [delete-memory](delete-memory.md)
 
@@ -38,7 +38,7 @@ same URLs without renaming them.
 - [x] `S1` `POST /v1/memories` creates a memory ([create-memory](create-memory.md))
 - [x] `S1` `GET /v1/memories/{id}` fetches one memory ([fetch-memory](fetch-memory.md))
 - [x] `S1` `DELETE /v1/memories/{id}` deletes one memory ([delete-memory](delete-memory.md))
-- [ ] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))
+- [x] `S1` `POST /v1/memories/search` searches ([search-memories](search-memories.md))
 - [x] `S1` JSON error bodies are `{ error: string }`
 - [x] `S1` Unknown paths return `404` `{ error: "Not found." }`
 - [x] `S1` Wrong method on a known path returns `405` `{ error: "Method not allowed." }`

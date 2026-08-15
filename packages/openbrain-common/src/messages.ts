@@ -13,3 +13,8 @@ export const ERROR_CONTENT_TOO_LARGE = "`content` is too large.";
 export const ERROR_MEMORY_TOO_LARGE = "Memory is too large to store.";
 export const ERROR_ID_UUID = "`id` must be a valid UUID v4.";
 export const ERROR_QUERY_EMPTY = "`query` must be a non-empty string.";
+export const ERROR_QUERY_TOO_LARGE = "`query` is too large.";
+export const ERROR_LIMIT_NUMBER = "`limit` must be a number when provided.";
+export const ERROR_THRESHOLD_RANGE = "`threshold` must be a number in [0, 1].";
+export const ERROR_SOURCE_STRING =
+  "`source` must be a non-empty string when provided.";

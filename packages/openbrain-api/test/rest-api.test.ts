@@ -142,8 +142,10 @@ describe("API_KEY gate", () => {
       method: "POST",
       headers,
     });
-    expect(search.status).toBe(404);
-    await expect(search.json()).resolves.toEqual({ error: ERROR_NOT_FOUND });
+    expect(search.status).toBe(400);
+    await expect(search.json()).resolves.toEqual({
+      error: "Request body must be valid JSON.",
+    });
   });
 });
 
