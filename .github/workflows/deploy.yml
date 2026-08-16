@@ -2,6 +2,8 @@ name: Deploy
 
 # After main advances, recreate any missing Cloudflare resources and deploy
 # the REST Worker. Idempotent: existing D1 / Vectorize objects are left alone.
+# Local `wrangler dev -e dev` uses openbrain-memories-dev; this workflow
+# deploys the top-level Worker against openbrain-memories.
 on:
   push:
     branches: [main]
@@ -84,4 +86,4 @@ jobs:
 
       - name: Deploy Worker
         working-directory: packages/openbrain-api
-        run: npx wrangler deploy
+        run: npx wrangler deploy --env=""

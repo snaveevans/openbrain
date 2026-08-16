@@ -30,4 +30,35 @@
   "ai": {
     "binding": "AI",
   },
+  // Local only (`npm run dev` → wrangler dev -e dev). Bindings are not
+  // inherited — redeclare every binding this Worker needs. Deploy without
+  // --env stays on production (`openbrain-memories`). Do not
+  // `wrangler deploy -e dev`.
+  "env": {
+    "dev": {
+      // Inherited `routes` would otherwise publish this env to
+      // openbrain.tylerevans.co. Keep this env undeployable as a public origin.
+      "workers_dev": false,
+      "routes": [],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "openbrain",
+          "database_id": "08681607-7750-46fd-8de9-ebac3dec3380",
+          "migrations_dir": "migrations",
+        },
+      ],
+      "vectorize": [
+        {
+          "binding": "VECTORIZE",
+          "index_name": "openbrain-memories-dev",
+          "remote": true,
+        },
+      ],
+      "ai": {
+        "binding": "AI",
+        "remote": true,
+      },
+    },
+  },
 }
