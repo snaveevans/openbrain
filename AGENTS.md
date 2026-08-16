@@ -69,6 +69,54 @@ Intended packages (not all present yet): remote MCP Worker, CLI.
 - Time estimates from training data are stale. Prefer the correct solution over
   a shortcut unless the user asks for a dirty pass.
 
+## External dependencies & testing
+
+This system depends on paid, eventually-consistent Cloudflare services
+(Workers AI, Vectorize, D1). The rules below apply to any code, test, or
+script that touches them — and generalize to anything that depends on an
+external service whose behavior you do not fully control.
+
+- **Diagnose and measure before you tune.** When behavior is wrong or slow,
+  write the smallest probe that pins _which layer_ is responsible before
+  changing thresholds. Set every timeout, retry count, poll interval, and
+  capacity limit from a measurement of the real thing — not an estimate — and
+  record the measurement in a comment at the constant so the next reader can
+  tell a measured value from a guess.
+- **Fail loud, early, and actionable.** Gate every precondition (credentials,
+  config, bindings, schema) up front with a message that names what is missing
+  and how to fix it. One clear throw beats a cascade of cryptic downstream
+  errors.
+- **The CI gate is hermetic; live-cloud work is opt-in and guarded.** `npm
+test` (the PR gate) must never need credentials or hit a paid external
+  service. Anything that does runs through a separate command and is
+  structurally prevented from joining the gate (e.g. an assertion that the two
+  scripts stay separate).
+- **Assert the invariant, not the timing, for eventually-consistent systems.**
+  Poll until the observable condition holds and assert that it _eventually_
+  does. On cap-hit, **fail** with a "did it ever happen?" probe — never silently
+  pass, and never assert "within N ms" unless N is measured.
+- **Pin the real external identity; fakes cannot catch vendor swaps.**
+  Integration tests assert against the actual external identity (model id, index
+  name, API version, binding target) _independently_ of the source constants, so
+  a swap to a compatible-but-wrong dependency still fails. Unit tests with fakes
+  cannot, by construction.
+- **Namespace shared external state per-run and prove teardown.** Anything that
+  mutates shared external state (a remote index, shared DB, bucket) writes under
+  a per-run prefix and verifies cleanup; leftovers are a failure, not a warning.
+- **Make context-sensitive config structurally un-misusable.** If a config is
+  safe in only one context (dev bindings, a test env), prevent its use in the
+  wrong context by construction — not by hoping humans remember a flag.
+- **Read the installed API surface before coding against it.** Before
+  integrating a library — especially fast-moving ones (wrangler, vitest, Hono)
+  — read the version-specific types/docs actually installed, and fix
+  deprecations from the migration guide, not from memory or copied old configs.
+- **Treat paid external calls as a first-class cost concern.** Any test, script,
+  or job that calls a paid external API declares its cost footprint and stays
+  opt-in; poll/retry counts multiply cost. For billing decisions, ground every
+  claim in the official source, flag where it is silent, and do not rely on
+  alerts as a safety net — only a hard spend cap (prepaid credits / capped
+  gateway) actually limits cost.
+
 ## Opening a PR
 
 Use [`.github/pull_request_template.md`](.github/pull_request_template.md).
