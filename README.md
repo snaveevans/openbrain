@@ -43,10 +43,18 @@ npm run build
 npm test
 ```
 
+These are the PR gates and stay hermetic — no Cloudflare credentials needed.
+The real-bindings **integration suite** is separate and off-CI: see
+[`packages/openbrain-api/README.md`](packages/openbrain-api/README.md#testing)
+(`npm run test:integration`, needs `CLOUDFLARE_API_TOKEN` +
+`CLOUDFLARE_ACCOUNT_ID`).
+
 PRs run those same gates in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 Merges to `main` also run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
-`scripts/ensure-cloudflare.sh` creates the D1 database and Vectorize index if they
-are missing, then deploys the Worker. Needs repo secrets
+`scripts/ensure-cloudflare.sh` creates the D1 database and both Vectorize
+indexes (`openbrain-memories` for production, `openbrain-memories-dev` for
+local `wrangler dev -e dev`) if they are missing, then deploys the Worker.
+Needs repo secrets
 `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
 
 ## License
