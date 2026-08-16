@@ -41,7 +41,7 @@ jobs:
 
       - name: Bundle Worker
         working-directory: packages/openbrain-api
-        run: npx wrangler deploy --dry-run --outdir /tmp/openbrain-bundle
+        run: npx wrangler deploy --env="" --dry-run --outdir /tmp/openbrain-bundle
 
       - name: Test
         run: npm test
