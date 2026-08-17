@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @snaveevans/openbrain-common && npm run build --workspace @snaveevans/openbrain-api --if-present && npm run build --workspace @snaveevans/openbrain-mcp --if-present",
+    "build": "npm run build --workspace @snaveevans/openbrain-common && npm run build --workspace @snaveevans/openbrain-api --if-present",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

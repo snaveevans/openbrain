@@ -51,10 +51,9 @@ neither unless a spec's Observable Contract needs it.
 docs/                       Layered docs (see docs/README.md)
 packages/openbrain-common   Shared REST types and ports (not a runtime)
 packages/openbrain-api      REST Worker (health, auth, create)
-packages/openbrain-mcp      Existing local MCP client (will be retargeted at REST)
 ```
 
-Intended packages (not all present yet): remote MCP Worker, CLI.
+Intended packages (not all present yet): local MCP, remote MCP Worker, CLI.
 
 ## Working rules
 
