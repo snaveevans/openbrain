@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # CLI
 
-**Status:** `review`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [rest-api](rest-api.md), [authentication](../cross-cutting/authentication.md), [memory-model](../cross-cutting/memory-model.md), [create-memory](create-memory.md), [fetch-memory](fetch-memory.md), [search-memories](search-memories.md), [delete-memory](delete-memory.md)
 
@@ -28,16 +28,16 @@ on the tool and on each command is enough to use it.
 
 ## Acceptance Criteria
 
-- [ ] `S1` The package is named **OpenBrain CLI**. After install, the binary on `PATH` is `openbrain`
-- [ ] `S1` The CLI requires a REST base URL and API key from flags or `OPENBRAIN_BASE_URL` / `OPENBRAIN_API_KEY`; a flag overrides the matching env var when both are set
-- [ ] `S1` Missing key or base URL is a fatal error before any request
-- [ ] `S1` Commands exist for create, fetch, search, and delete, each calling only the matching REST route
-- [ ] `S1` Success prints the API's JSON response body **verbatim** to stdout, followed by a single trailing newline
-- [ ] `S1` Non-OK HTTP exits non-zero and prints the server `error` string on stderr; a non-OK response with no `error` body prints `Request failed with <status>`
-- [ ] `S1` Network failure (no HTTP response) exits non-zero with a local message on stderr and nothing on stdout
-- [ ] `S1` The CLI does not follow HTTP redirects
-- [ ] `S1` `--help`/`-h` on the top level and on every command prints usage precise enough for an agent to use the tool without other documentation
-- [ ] `S1` The CLI does not implement embedding, storage, or a second auth scheme
+- [x] `S1` The package is named **OpenBrain CLI**. After install, the binary on `PATH` is `openbrain`
+- [x] `S1` The CLI requires a REST base URL and API key from flags or `OPENBRAIN_BASE_URL` / `OPENBRAIN_API_KEY`; a flag overrides the matching env var when both are set
+- [x] `S1` Missing key or base URL is a fatal error before any request
+- [x] `S1` Commands exist for create, fetch, search, and delete, each calling only the matching REST route
+- [x] `S1` Success prints the API's JSON response body **verbatim** to stdout, followed by a single trailing newline
+- [x] `S1` Non-OK HTTP exits non-zero and prints the server `error` string on stderr; a non-OK response with no `error` body prints `Request failed with <status>`
+- [x] `S1` Network failure (no HTTP response) exits non-zero with a local message on stderr and nothing on stdout
+- [x] `S1` The CLI does not follow HTTP redirects
+- [x] `S1` `--help`/`-h` on the top level and on every command prints usage precise enough for an agent to use the tool without other documentation
+- [x] `S1` The CLI does not implement embedding, storage, or a second auth scheme
 
 ## Observable Contract
 
