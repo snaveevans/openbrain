@@ -128,6 +128,51 @@ describe("the API key is never printed anywhere", () => {
     expect(r.stdout).not.toContain(SECRET);
     expect(r.stderr).not.toContain(SECRET);
   });
+
+  // Local-error paths are where an argv echo would realistically leak a
+  // flag-provided key to stderr. Each trips a local error with the secret
+  // passed as a --api-key flag and asserts the secret is nowhere in output.
+  it("on a local-error path — unknown command (argv-echo risk)", async () => {
+    const r = await run(["bogus", "--api-key", SECRET, "--base-url", BASE]);
+    expect(r.transport.requestCount).toBe(0);
+    expect(r.code).not.toBe(0);
+    expect(r.stdout).not.toContain(SECRET);
+    expect(r.stderr).not.toContain(SECRET);
+  });
+
+  it("on a local-error path — missing --id", async () => {
+    const r = await run(["fetch", "--api-key", SECRET, "--base-url", BASE]);
+    expect(r.transport.requestCount).toBe(0);
+    expect(r.code).not.toBe(0);
+    expect(r.stdout).not.toContain(SECRET);
+    expect(r.stderr).not.toContain(SECRET);
+  });
+
+  it("on a local-error path — invalid --metadata JSON", async () => {
+    const r = await run([
+      "create",
+      "--content",
+      "x",
+      "--metadata",
+      "{invalid",
+      "--api-key",
+      SECRET,
+      "--base-url",
+      BASE,
+    ]);
+    expect(r.transport.requestCount).toBe(0);
+    expect(r.code).not.toBe(0);
+    expect(r.stdout).not.toContain(SECRET);
+    expect(r.stderr).not.toContain(SECRET);
+  });
+
+  it("on a local-error path — missing base-url with the key flag present", async () => {
+    const r = await run(["create", "--content", "x", "--api-key", SECRET]);
+    expect(r.transport.requestCount).toBe(0);
+    expect(r.code).not.toBe(0);
+    expect(r.stdout).not.toContain(SECRET);
+    expect(r.stderr).not.toContain(SECRET);
+  });
 });
 
 describe("non-OK HTTP → non-zero + server error on stderr, nothing on stdout", () => {
@@ -462,6 +507,44 @@ describe("--base-url is used verbatim (no /v1 detection)", () => {
   });
 });
 
+describe("provided optionals are forwarded in the request body", () => {
+  it("create forwards --source and a valid-object --metadata", async () => {
+    const transport = new FakeTransport().respond(201, "{}");
+    const r = await run(
+      ["create", "--content", "x", "--source", "cli", "--metadata", '{"k":1}'],
+      { env: fullEnv(), transport },
+    );
+    expect(r.transport.requests[0].body).toBe(
+      '{"content":"x","source":"cli","metadata":{"k":1}}',
+    );
+  });
+
+  it("search forwards finite --limit/--threshold as JSON numbers and --source", async () => {
+    const transport = new FakeTransport().respond(200, "{}");
+    const r = await run(
+      [
+        "search",
+        "--query",
+        "q",
+        "--source",
+        "app",
+        "--limit",
+        "5",
+        "--threshold",
+        "0.5",
+      ],
+      { env: fullEnv(), transport },
+    );
+    const body = r.transport.requests[0].body;
+    // Finite values are coerced to numbers (no quotes), not raw strings.
+    expect(body).toBe('{"query":"q","source":"app","limit":5,"threshold":0.5}');
+    expect(body).toContain('"limit":5');
+    expect(body).not.toContain('"limit":"5"');
+    expect(body).toContain('"threshold":0.5');
+    expect(body).not.toContain('"threshold":"0.5"');
+  });
+});
+
 describe("--metadata local-parse vs forward boundary", () => {
   it("invalid JSON is a local error and sends no request", async () => {
     const r = await run(
@@ -516,6 +599,8 @@ describe("--limit / --threshold are forwarded (not locally rejected)", () => {
       transport,
     });
     expect(r.transport.requestCount).toBe(1);
+    // Non-finite (NaN) → forwarded as a raw string, the other half of coercion.
+    expect(r.transport.requests[0].body).toContain('"limit":"abc"');
     expect(r.code).not.toBe(0);
     expect(r.stderr).toContain(ERR_LIMIT_NUMBER);
     expect(r.stdout).toBe("");
@@ -545,6 +630,9 @@ describe("--limit / --threshold are forwarded (not locally rejected)", () => {
       transport,
     });
     expect(r.transport.requestCount).toBe(1);
+    // Finite → coerced to a number even when out of range; the API then rejects.
+    expect(r.transport.requests[0].body).toContain('"threshold":5');
+    expect(r.transport.requests[0].body).not.toContain('"threshold":"5"');
     expect(r.code).not.toBe(0);
     expect(r.stderr).toContain(ERR_THRESHOLD_RANGE);
     expect(r.stdout).toBe("");

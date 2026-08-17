@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # CLI
 
-**Status:** `in-progress`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [rest-api](rest-api.md), [authentication](../cross-cutting/authentication.md), [memory-model](../cross-cutting/memory-model.md), [create-memory](create-memory.md), [fetch-memory](fetch-memory.md), [search-memories](search-memories.md), [delete-memory](delete-memory.md)
 
