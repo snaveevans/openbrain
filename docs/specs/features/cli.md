@@ -90,8 +90,11 @@ and the API's error is printed on stderr.
   rejects the empty/missing field.
 - Missing `--id` (fetch/delete) is a **local error** — `--id` is a path
   parameter, so the CLI cannot form the request URL without it. A _present but
-  malformed_ `--id` (not a UUID) is **forwarded**; the API returns 400
-  `` `id` must be a valid UUID v4. ``.
+  malformed_ `--id` (not a UUID) is **forwarded as a single URL-encoded path
+  segment_, so any non-UUID value — including path-traversal strings like
+  `../foo` — yields the API's 400 `` `id` must be a valid UUID v4. ``, never a
+  wrong-route 404 or an escaped path. Valid UUIDs are hex and hyphens only, so
+  encoding is a no-op on them; the server still sees the exact string.
 - An unknown command is a **local error** (exit non-zero, usage on stderr, no
   request).
 
@@ -119,15 +122,19 @@ redirect target — a cross-host key leak
 
 ### Help
 
-`openbrain --help` / `-h` (and `openbrain` with no args, or an unknown command)
-prints top-level usage: the four commands, the config flags and env vars, and a
-pointer to per-command help. `openbrain <command> --help` / `-h` prints that
+`openbrain --help` / `-h`, and `openbrain` with no args, print top-level usage
+to **stdout** and exit 0: the four commands, the config flags and env vars, and
+a pointer to per-command help. `openbrain <command> --help` / `-h` prints that
 command's flags (required vs optional), value types, and at least one example
-invocation. Help is **local** — it needs no key, no base URL, and makes no
-request. The text is precise enough that an agent reading only the help output
-can construct correct invocations (exact flag names, which are required, value
-formats such as "JSON object string" for `--metadata`, UUID for `--id`, number
-for `--limit`/`--threshold`). Exit 0.
+invocation to **stdout** and exits 0. Help is **local** — it needs no key, no
+base URL, and makes no request. The text is precise enough that an agent reading
+only the help output can construct correct invocations (exact flag names, which
+are required, value formats such as "JSON object string" for `--metadata`, UUID
+for `--id`, number for `--limit`/`--threshold`).
+
+An **unknown command** is not help — it is a local error (see Edge Cases):
+`openbrain: <message>` + usage on **stderr**, exit non-zero, no request. The
+usage lets an agent self-correct; the non-zero exit signals failure.
 
 ## Delivery Plan
 
@@ -145,7 +152,7 @@ for `--limit`/`--threshold`). Exit 0.
 | Both flag and env set | Flag wins |
 | `--base-url` without `/v1`, or a hosted-MCP URL | Used verbatim; fails at the API (e.g. `404`/`405`), surfaced as non-OK |
 | Missing `--id` (fetch/delete) | `openbrain: <message>` on stderr, exit non-zero, no request (path param — URL cannot be formed) |
-| Malformed `--id` (not a UUID) | Forwarded; API 400 `` `id` must be a valid UUID v4. `` |
+| Malformed `--id` (not a UUID, incl. `../foo`) | Forwarded as one encoded segment; API 400 `` `id` must be a valid UUID v4. `` (never a wrong-route 404) |
 | Missing `--content` / `--query` | Forwarded; API rejects (`` `content` must be a non-empty string. `` / `` `query` must be a non-empty string. ``) |
 | `--limit` / `--threshold` unparseable (`abc`, `Infinity`) | Forwarded as raw string; API rejects (`` `limit` must be a number when provided. `` / `` `threshold` must be a number in [0, 1]. ``) |
 | `--metadata` invalid JSON | `openbrain: <message>` on stderr, exit non-zero, no request |
