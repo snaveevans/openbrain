@@ -72,3 +72,4 @@ Use the project skills in `.agents/skills/` to keep records at decision altitude
 | [0005](0005-store-memories-in-d1.md)            | Store memory documents in D1               | accepted |
 | [0006](0006-embed-with-workers-ai-index-in-vectorize.md) | Embed with Workers AI and index in Vectorize | accepted |
 | [0007](0007-integration-test-against-remote-dev-bindings.md) | Integration-test the production Worker path against remote dev bindings | accepted |
+| [0008](0008-oauth-gate-in-front-of-hosted-mcp.md) | OAuth gate in front of hosted MCP | accepted |
