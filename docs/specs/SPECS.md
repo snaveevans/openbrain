@@ -37,8 +37,8 @@ puts OAuth in front of the hosted MCP endpoint only — REST auth is unchanged.
 | [cli](features/cli.md) | Thin CLI client | `active` |
 | [search-memories](features/search-memories.md) | Semantic search | `in-progress` |
 | [fetch-memory](features/fetch-memory.md) | Point lookup | `in-progress` |
-| [create-memory](features/create-memory.md) | Create + embed | `active` |
-| [delete-memory](features/delete-memory.md) | Hard delete | `active` |
+| [create-memory](features/create-memory.md) | Create + embed | `in-progress` |
+| [delete-memory](features/delete-memory.md) | Hard delete | `in-progress` |
 
 Operation specs describe REST behavior. Client specs only map to those
 routes. Boxes stay unchecked until a rewrite slice is implemented and tested
