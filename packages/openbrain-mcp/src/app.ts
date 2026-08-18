@@ -2,6 +2,7 @@ import { methodNotAllowed } from "hono/method-not-allowed";
 import { Hono } from "hono";
 
 import type { AppOptions, McpBindings } from "./env.js";
+import { getAuthorize, postAuthorize } from "./authorize.js";
 import { authorizeBearer } from "./gate.js";
 import {
   CACHE_CONTROL_NO_STORE,
@@ -12,6 +13,7 @@ import {
 } from "./http.js";
 import { handleJsonRpc, parseErrorResponse } from "./jsonrpc.js";
 import { fetchRestClient } from "./rest-client.js";
+import { postToken } from "./token.js";
 
 export type { AppOptions, McpBindings } from "./env.js";
 
@@ -64,6 +66,20 @@ export function createApp(options: AppOptions = {}) {
       ],
     });
   });
+
+  // `GET /authorize` renders the "paste your API key" form when all OAuth
+  // params validate; `POST /authorize` re-validates the hidden fields, checks
+  // the key, mints a single-use code, and 302s to the validated redirect.
+  // Invalid requests → 400 JSON (house-envelope bodies); never a 302 to an
+  // unvalidated URI. Both carry `Cache-Control: no-store` (via the middleware).
+  app.get("/authorize", async (c) => getAuthorize(c, c.env));
+  app.post("/authorize", async (c) => postAuthorize(c, c.env));
+
+  // `POST /token` — form-encoded only. Client auth (RFC 6749 §5.2 split) runs
+  // before grant validation; `authorization_code` verifies PKCE S256 + binding
+  // and issues an ~1h access JWT + refresh token. `GET /token` → 405 (the
+  // method-not-allowed middleware fires for non-POST on this registered path).
+  app.post("/token", async (c) => postToken(c, c.env));
 
   // The MCP endpoint. Gate (bearer) runs before the body is parsed; domain
   // work (REST calls) runs only after the gate accepts. All `tools/call`
