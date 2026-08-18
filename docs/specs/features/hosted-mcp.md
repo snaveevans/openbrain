@@ -171,6 +171,12 @@ log-prohibition list (never log keys, tokens, codes, verifiers, or `Authorizatio
   connector use does not. Our tool is `search_memories`. Decision on an alias
   is parked until the real connector handshake is exercised.
 - **CIMD timing.** Add only if DCR proves insufficient for ChatGPT.
+- **Text for an unreachable REST upstream.** When the upstream call to `{api}`
+  throws (network error, DNS, connection refused — no HTTP response), the edge
+  table pins `isError: true` but not the result *text*. The AC's "server `error`
+  string (or a status mention if the body has none)" assumes an HTTP response
+  exists. Pick a generic message (e.g. `REST API is unreachable.`), or define
+  what a no-status tool error says. — tyler
 
 ## Historical note
 
