@@ -74,14 +74,14 @@ MCP-specific.
 ### Slice S2 — Interactive OAuth: authorize, codes, token issuance (static clients)
 
 - [ ] `S2` `GET {mcp}/authorize` renders the minimal "paste your API key" form when all OAuth params validate per [oauth](../cross-cutting/oauth.md)
-- [ ] `S2` Unknown client, unregistered `redirect_uri`, non-S256 challenge, or otherwise invalid request → `400` JSON, never a `302` to an unvalidated URI
+- [ ] `S2` Unknown client, unregistered `redirect_uri`, non-S256 challenge, or otherwise invalid request → `400` JSON (house-envelope bodies pinned in [oauth](../cross-cutting/oauth.md)); never a `302` to an unvalidated URI, and v1 sends no error redirects, even to validated ones
 - [ ] `S2` `POST {mcp}/authorize` with a wrong or missing key → `401`, form re-rendered with the generic error, no redirect
 - [ ] `S2` `POST {mcp}/authorize` with a correct key → `302` to the validated `redirect_uri` with a code and echoed `state`
 - [ ] `S2` Codes are single-use, bound to client/redirect/challenge, and expire after 10 minutes
 - [ ] `S2` `POST {mcp}/token` `authorization_code` verifies PKCE S256 and issues an ~1h JWT (claims per [oauth](../cross-cutting/oauth.md)) plus a refresh token; `code_verifier` mismatch or replayed code → `invalid_grant`
 - [ ] `S2` Static clients from `MCP_CLIENTS` can complete the flow (optional `client_secret` honored when present)
 - [ ] `S2` Issued access tokens are accepted as `Bearer` at `{mcp}/mcp` (JWT signature/iss/aud/exp validation — the JWT-accepting gate path lands in this slice)
-- [ ] `S2` Missing/empty `API_KEY`, `TOKEN_SECRET`, or unparseable `MCP_CLIENTS` fails closed with `500` naming what is missing
+- [ ] `S2` Missing/empty `API_KEY` or `TOKEN_SECRET`, or unparseable/wrong-shaped `MCP_CLIENTS`, fails closed with `500` naming what is missing — a missing `TOKEN_SECRET` fails the whole `/mcp` gate, BYOK lookups included ([oauth](../cross-cutting/oauth.md))
 
 ### Slice S3 — Dynamic registration + refresh rotation (ChatGPT path)
 
@@ -148,6 +148,7 @@ without a spec change beyond this line.
 | Expired access JWT at `/mcp` | `401` with `error="invalid_token"`; client refreshes via `S3` rotation |
 | Caller sends `x-api-key` and no bearer | `401` — see Anti-Patterns in [oauth](../cross-cutting/oauth.md) |
 | `/authorize` brute force | Accepted risk in v1 (high-entropy key); see [oauth](../cross-cutting/oauth.md) |
+| Code replayed simultaneously from another edge | Possible second success inside the KV propagation window (~1 min); accepted v1 risk per [oauth](../cross-cutting/oauth.md) |
 
 ## Observability
 

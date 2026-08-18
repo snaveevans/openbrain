@@ -45,8 +45,18 @@ safe here (see Client Registration).
   - a KV namespace binding for token-lifecycle state (codes, clients, refresh
     tokens, operator-minted tokens).
 - **Fail closed, fail loud.** Missing/empty `API_KEY` or `TOKEN_SECRET`, or
-  unparseable `MCP_CLIENTS`, makes routes that need them return `500` with an
-  actionable message naming what is missing. Nothing falls open.
+  `MCP_CLIENTS` that is unparseable or wrong-shaped (not a
+  `client_id` → `{ "client_secret"?: string, "redirect_uris": string[] }`
+  map), makes routes that need them return `500` with an actionable message
+  naming what is missing. Nothing falls open. `MCP_CLIENTS` is optional;
+  set-but-invalid is an operator error and never degrades to "no clients".
+  - Routes that need `TOKEN_SECRET`: `POST /token` (signing) and, from `S2`
+    on, the whole `{mcp}/mcp` gate. A missing `TOKEN_SECRET` fails every
+    `/mcp` request with `500` naming it — BYOK KV lookups included. A loud
+    mis-deploy beats silently serving minted tokens around a broken JWT path.
+  - `MCP_CLIENTS` only gates the static-client path: it 500s `/authorize`
+    (and `/token` grants bound to a static client) when invalid; it does not
+    affect `/health`, the well-knowns, or the `/mcp` gate.
 
 ### Discovery — unauthenticated, at the domain root
 
@@ -100,6 +110,20 @@ errors be delivered via `302` with `error` params and echoed `state`.
 JSON. Valid requests get `200 text/html`: a minimal page with all OAuth params
 as hidden fields plus one input for the API key.
 
+The `400` bodies are house-envelope sentences (as at `/mcp` and REST), not RFC
+error codes — no connector parses them, since v1 sends no error redirects:
+
+- Unknown `client_id` or unregistered `redirect_uri` →
+  `400 { "error": "Unknown client or redirect URI." }` — the **same** body for
+  both; the response must never reveal whether the client exists (same
+  no-oracle posture as the key check below).
+- Wrong/missing `response_type`, missing `code_challenge`,
+  `code_challenge_method` other than `S256`, or any other malformed request →
+  `400 { "error": "Invalid authorization request." }`.
+
+v1 uses `302` for success only, even when the redirect URI has validated (the
+permission in Redirect URIs above stands unused).
+
 `POST {mcp}/authorize` trims and exact-compares the pasted key to `API_KEY`
 (same comparison rules as [authentication](authentication.md)).
 
@@ -112,14 +136,39 @@ as hidden fields plus one input for the API key.
 ### Authorization codes
 
 Random with ≥128 bits of entropy. **TTL 10 minutes** (conventional value, not
-measured). **Single-use**: read-and-delete at exchange; an unknown, expired,
-or replayed code is `400 { "error": "invalid_grant" }`.
+measured). **Single-use**: read-and-delete at exchange — consumed **on
+attempt, not on success**. Once a presented code is found and unexpired it is
+deleted before client/redirect/PKCE verification, so any verification failure
+— and every later presentation, for any reason — is
+`400 { "error": "invalid_grant" }`. A failed exchange means a fresh
+authorization; that is deliberate (it closes the replay window on a guessed or
+intercepted verifier).
+
+KV is eventually consistent: read-and-delete is not atomic across edges, so a
+code replayed *simultaneously* from another edge inside the propagation window
+(~1 min, same order as minted-token propagation below) can succeed once more.
+Accepted risk for v1 — single tenant, and issuance is API-key-gated with a
+1-hour JWT TTL bounding the blast radius. Atomic single-use would need a
+Durable Object or transactional store: out of scope for v1 and would warrant
+its own ADR.
 
 ### Token endpoint
 
 `POST {mcp}/token`, form-encoded. Client authentication is whatever the client
 registered with: `none` (public), `client_secret_basic`, or
 `client_secret_post`. DCR clients default to `none`.
+
+Client authentication runs **before** any grant validation and follows the
+RFC 6749 §5.2 split:
+
+- A wrong `client_secret` presented via `Authorization: Basic` — or Basic
+  attempted for an unknown client — → `401 { "error": "invalid_client" }`
+  with `WWW-Authenticate: Basic realm="{mcp}"`.
+- A wrong or entirely absent secret otherwise (post body, or none presented
+  for a client configured with one) → `400 { "error": "invalid_client" }`.
+- The body never distinguishes unknown-client from wrong-secret, and failed
+  client authentication never touches the code — consume-on-attempt applies
+  only once a code is read.
 
 - `grant_type=authorization_code`: verify the code as above, then verify
   `code_verifier` per RFC 7636: `BASE64URL(SHA256(verifier))` must equal the
