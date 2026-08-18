@@ -32,12 +32,12 @@ puts OAuth in front of the hosted MCP endpoint only — REST auth is unchanged.
 | Spec | Area | Status |
 | ---- | ---- | ------ |
 | [rest-api](features/rest-api.md) | HTTP domain surface | `active` |
-| [hosted-mcp](features/hosted-mcp.md) | Thin remote MCP client (Cloudflare) | `review` |
+| [hosted-mcp](features/hosted-mcp.md) | Thin remote MCP client (Cloudflare) | `in-progress` |
 | [local-mcp](features/local-mcp.md) | Thin stdio MCP client (record only) | `deprecated` |
 | [cli](features/cli.md) | Thin CLI client | `active` |
 | [search-memories](features/search-memories.md) | Semantic search | `in-progress` |
-| [fetch-memory](features/fetch-memory.md) | Point lookup | `in-progress` |
-| [create-memory](features/create-memory.md) | Create + embed | `in-progress` |
+| [fetch-memory](features/fetch-memory.md) | Point lookup | `active` |
+| [create-memory](features/create-memory.md) | Create + embed | `active` |
 | [delete-memory](features/delete-memory.md) | Hard delete | `in-progress` |
 
 Operation specs describe REST behavior. Client specs only map to those

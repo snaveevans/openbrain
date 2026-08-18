@@ -1,0 +1,25 @@
+{
+  "name": "@snaveevans/openbrain-mcp",
+  "version": "0.1.0",
+  "description": "Open Brain Hosted MCP (Cloudflare Worker) — thin remote MCP client of the REST API, gated by OAuth",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "wrangler dev -e dev",
+    "deploy": "npm run build --prefix ../openbrain-common && wrangler deploy --env=\"\"",
+    "cf-typegen": "wrangler types",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@snaveevans/openbrain-common": "*",
+    "hono": "^4.13.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.123.0"
+  }
+}
