@@ -89,6 +89,9 @@ jobs:
         working-directory: packages/openbrain-api
         run: npx wrangler deploy --env=""
 
+      - name: Ensure MCP KV namespace exists
+        run: bash scripts/ensure-cloudflare-mcp.sh
+
       - name: Deploy MCP Worker
         working-directory: packages/openbrain-mcp
         run: npx wrangler deploy --env=""
