@@ -23,12 +23,13 @@
     "API_URL": "https://openbrain.tylerevans.co/v1",
   },
   // Token-lifecycle KV (BYOK operator-minted tokens in S1; codes / refresh
-  // tokens in S2+). Namespace id is created by an ops script (idempotent);
-  // keep it in sync if the namespace is ever recreated.
+  // tokens in S2+). Namespace created via `wrangler kv namespace create
+  // openbrain-mcp-tokens`; id is committed here. Keep it in sync if the
+  // namespace is ever recreated.
   "kv_namespaces": [
     {
       "binding": "TOKENS",
-      "id": "00000000000000000000000000000000",
+      "id": "ce4b23c2c52d4463a7d47a2e82efaf68",
     },
   ],
   // Local only (`npm run dev` → wrangler dev -e dev). Bindings are not
@@ -41,10 +42,12 @@
       "vars": {
         "API_URL": "http://localhost:8787/v1",
       },
+      // Dev namespace openbrain-mcp-tokens-dev — keeps local/remote-dev
+      // minting out of prod KV.
       "kv_namespaces": [
         {
           "binding": "TOKENS",
-          "id": "00000000000000000000000000000000",
+          "id": "b863849a71d44905b23577223f0aa5a7",
         },
       ],
     },
