@@ -14,12 +14,13 @@ export {
 
 /**
  * House error envelope `{ "error": string }` at `status`. Used for the
- * non-JSON-RPC responses on this Worker (401 gate, 404 unknown path, 405
- * wrong method, 500 fail-closed). JSON-RPC results use `c.json` directly.
+ * non-JSON-RPC responses on this Worker (400 OAuth errors, 401 gate, 404
+ * unknown path, 405 wrong method, 500 fail-closed). JSON-RPC results use
+ * `c.json` directly.
  */
 export function jsonError(
   c: Context,
-  status: 401 | 404 | 405 | 500,
+  status: 400 | 401 | 404 | 405 | 500,
   error: string,
 ): Response {
   const body: ErrorBody = { error };
