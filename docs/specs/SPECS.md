@@ -1,4 +1,4 @@
-> **Audience:** everyone · **Purpose:** authoritative map of all feature and cross-cutting specs · **Source of truth:** this file · **Last reviewed:** 2026-08-14
+> **Audience:** everyone · **Purpose:** authoritative map of all feature and cross-cutting specs · **Source of truth:** this file · **Last reviewed:** 2026-08-17
 
 # Spec Index
 
@@ -20,11 +20,12 @@ relevant cross-cutting specs rather than re-describing the behavior.
 | ---- | ------- | ------ |
 | [memory-model](cross-cutting/memory-model.md) | Canonical memory document and agent text format | `review` |
 | [authentication](cross-cutting/authentication.md) | Shared `API_KEY` via `x-api-key` on every request | `review` |
+| [oauth](cross-cutting/oauth.md) | OAuth bearer gate + token lifecycle for the hosted MCP Worker | `review` |
 
 Authorization, validation, errors, and observability are still unnamed as
 cross-cutting specs. [ADR-0004](../decisions/0004-rest-as-domain-surface.md)
-makes REST the domain surface; OAuth, if added later, is a gate in front of
-that API.
+makes REST the domain surface; [ADR-0008](../decisions/0008-oauth-gate-in-front-of-hosted-mcp.md)
+puts OAuth in front of the hosted MCP endpoint only — REST auth is unchanged.
 
 ## Feature Specs
 
@@ -32,7 +33,7 @@ that API.
 | ---- | ---- | ------ |
 | [rest-api](features/rest-api.md) | HTTP domain surface | `active` |
 | [hosted-mcp](features/hosted-mcp.md) | Thin remote MCP client (Cloudflare) | `review` |
-| [local-mcp](features/local-mcp.md) | Thin stdio MCP client | `review` |
+| [local-mcp](features/local-mcp.md) | Thin stdio MCP client (record only) | `deprecated` |
 | [cli](features/cli.md) | Thin CLI client | `active` |
 | [search-memories](features/search-memories.md) | Semantic search | `in-progress` |
 | [fetch-memory](features/fetch-memory.md) | Point lookup | `in-progress` |

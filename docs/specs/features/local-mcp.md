@@ -7,7 +7,15 @@ date: 2026-08-14
 
 # Local MCP
 
-**Status:** `review`
+**Status:** `deprecated`
+
+> Deprecated 2026-08-17 per [#10](https://github.com/snaveevans/openbrain/issues/10):
+> all four target clients (Claude, ChatGPT, Grok, ChatMCP) are remote — Claude
+> Desktop consumes remote connectors natively — and the OAuth-gated hosted
+> Worker ([hosted-mcp](hosted-mcp.md),
+> [ADR-0008](../../decisions/0008-oauth-gate-in-front-of-hosted-mcp.md)) covers
+> every stated use. Kept as a record; not implemented. No replacement issue
+> unless a real need appears.
 **Owner:** tyler
 **Related Specs:** [rest-api](rest-api.md), [authentication](../cross-cutting/authentication.md), [memory-model](../cross-cutting/memory-model.md), [create-memory](create-memory.md), [delete-memory](delete-memory.md), [search-memories](search-memories.md), [fetch-memory](fetch-memory.md)
 
