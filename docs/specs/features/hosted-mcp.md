@@ -55,14 +55,19 @@ MCP-specific.
 - [ ] `S1` `GET {mcp}/health` is unauthenticated and returns `200 { ok: true, service: "openbrain-mcp" }` with no secrets
 - [ ] `S1` MCP is served over stateless streamable HTTP at `{mcp}/mcp`; JSON responses on; no server-side session
 - [ ] `S1` `{mcp}/mcp` without `Authorization: Bearer` is `401` carrying the `WWW-Authenticate` challenge per [oauth](../cross-cutting/oauth.md)
-- [ ] `S1` A presented-but-rejected bearer (unknown, expired, bad signature) is `401` with `error="invalid_token"` in the challenge
+- [ ] `S1` Any bearer token that does not resolve to an operator-minted token in KV is `401` with `error="invalid_token"` in the challenge. In S1 the gate does **not** parse JWTs — a presented access JWT is simply a KV miss and gets the same rejection
 - [ ] `S1` An operator-minted token present in KV is accepted as `Bearer` at `{mcp}/mcp`, per the BYOK section of [oauth](../cross-cutting/oauth.md)
 - [ ] `S1` `x-api-key` presented without a bearer token is `401` — the MCP surface never accepts the API key as a caller credential
 - [ ] `S1` The Worker calls REST with its **own configured** `API_KEY` and never forwards a caller credential or token upstream
 - [ ] `S1` Each advertised tool is implemented only by calling the matching REST route in [rest-api](rest-api.md)
 - [ ] `S1` Advertised tools cover the full REST surface: `search_memories`, `fetch`, `create_memory`, `delete_memory` per the operation specs
-- [ ] `S1` Agent-facing text uses the [memory-model](../cross-cutting/memory-model.md) rendering
-- [ ] `S1` REST `401` / `400` / `404` / `500` become MCP tool errors with the server `error` string (or a status mention if the body has none)
+- [ ] `S1` The Worker speaks the streamable-HTTP method set statelessly: `initialize` returns protocol version and a `tools` capability, `ping` succeeds, and no other capabilities are advertised
+- [ ] `S1` `{mcp}/mcp` is POST-only; `GET /mcp` (SSE stream request) is `405` with the JSON error envelope
+- [ ] `S1` `tools/call` results use the MCP envelope `{ content: [{ type: "text", text }] }`; domain failures arrive as HTTP 200 with `isError: true`
+- [ ] `S1` Agent-facing text uses the [memory-model](../cross-cutting/memory-model.md) rendering, plus the per-operation text pins in the operation specs
+- [ ] `S1` REST `401` / `400` / `500` become MCP tool errors (`isError: true`) with the server `error` string (or a status mention if the body has none)
+- [ ] `S1` REST `404` on `fetch` / `delete_memory` is a **normal** (non-error) tool result with the operation spec's not-found text — absence is data for the agent, not a tool failure
+- [ ] `S1` The Worker URL-encodes the `id` argument as a single path segment before calling REST; it validates nothing client-side — REST owns UUID validation
 - [ ] `S1` Both well-known documents are served unauthenticated at the domain root with the fields required by [oauth](../cross-cutting/oauth.md)
 - [ ] `S1` Unknown non-MCP paths return `404` `{ error: "Not found." }`
 
@@ -75,7 +80,7 @@ MCP-specific.
 - [ ] `S2` Codes are single-use, bound to client/redirect/challenge, and expire after 10 minutes
 - [ ] `S2` `POST {mcp}/token` `authorization_code` verifies PKCE S256 and issues an ~1h JWT (claims per [oauth](../cross-cutting/oauth.md)) plus a refresh token; `code_verifier` mismatch or replayed code → `invalid_grant`
 - [ ] `S2` Static clients from `MCP_CLIENTS` can complete the flow (optional `client_secret` honored when present)
-- [ ] `S2` Issued access tokens are accepted as `Bearer` at `{mcp}/mcp`
+- [ ] `S2` Issued access tokens are accepted as `Bearer` at `{mcp}/mcp` (JWT signature/iss/aud/exp validation — the JWT-accepting gate path lands in this slice)
 - [ ] `S2` Missing/empty `API_KEY`, `TOKEN_SECRET`, or unparseable `MCP_CLIENTS` fails closed with `500` naming what is missing
 
 ### Slice S3 — Dynamic registration + refresh rotation (ChatGPT path)
@@ -136,7 +141,7 @@ ChatGPT at `S3`.
 | KV unreachable during gate check (BYOK lookup) or token issuance | Loud failure: `500` with actionable message; never silently open |
 | Just-minted or just-revoked BYOK token | KV propagation (~1 min); operator waits and retries ([oauth](../cross-cutting/oauth.md)) |
 | Health while REST is down | `200` if this Worker is up; health does not proxy REST |
-| REST 401 (Worker's own key misconfigured) | MCP tool error; do not retry as a different identity |
+| REST unreachable or misconfigured (`API_KEY`/`API_URL`) | MCP tool error (`isError: true`); do not retry as a different identity |
 | Expired access JWT at `/mcp` | `401` with `error="invalid_token"`; client refreshes via `S3` rotation |
 | Caller sends `x-api-key` and no bearer | `401` — see Anti-Patterns in [oauth](../cross-cutting/oauth.md) |
 | `/authorize` brute force | Accepted risk in v1 (high-entropy key); see [oauth](../cross-cutting/oauth.md) |

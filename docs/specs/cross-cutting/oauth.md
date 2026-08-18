@@ -157,8 +157,9 @@ MCP hot path adds one signature check and nothing else
 Missing header → `401` with
 `WWW-Authenticate: Bearer realm="{mcp}", resource_metadata="{mcp}/.well-known/oauth-protected-resource"`.
 A presented-but-rejected token (bad signature, expired, unknown) → `401` with
-the same challenge plus `error="invalid_token"`. Body follows the JSON error
-envelope; 401 never says which check failed.
+the same challenge plus `error="invalid_token"`. The 401 body is
+`{ "error": "Unauthorized." }` — the house envelope, generic; it never says
+which check failed (the `WWW-Authenticate` header carries the distinction).
 
 ### Operator-minted tokens (BYOK / non-interactive path)
 

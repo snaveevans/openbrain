@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Create Memory
 
-**Status:** `active`
+**Status:** `in-progress`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -43,6 +43,7 @@ MCP, remote MCP) only forward this operation
 - [x] `S1` A request body that is valid JSON but not an object is rejected; nothing is stored
 - [x] `S1` Content or a document larger than the embedder or store will accept is rejected; nothing is stored or indexed
 - [x] `S1` Embed, store, or index failure leaves no memory row and no index entry
+- [ ] `S1` MCP clients that wrap this route render create success as the [memory-model](../cross-cutting/memory-model.md) text of the created memory
 
 ## Observable Contract
 

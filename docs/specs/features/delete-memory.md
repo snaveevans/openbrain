@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Delete Memory
 
-**Status:** `active`
+**Status:** `in-progress`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -37,6 +37,8 @@ the behavior. Thin clients only forward it
 - [x] `S1` After a successful delete, fetch of that id is not-found and search no longer returns it
 - [x] `S1` A failure that removes only one side is **500**; leftovers are possible. A later `DELETE` of the same id removes the remaining side
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); it runs before the UUID check and before any store or index work
+- [ ] `S1` MCP clients that wrap this route use agent text `Memory <id> was not found.` when REST returns 404 — a normal (non-error) tool result
+- [ ] `S1` MCP delete success renders `Memory <id> was deleted.` followed by a blank line and the [memory-model](../cross-cutting/memory-model.md) text of the deleted memory; `deleted: true` is implied by that line and is not rendered
 
 ## Observable Contract
 
@@ -115,7 +117,6 @@ or API keys. Leftovers after a `500` are visible to the caller only as that
 - Bulk delete
 - Soft delete / tombstones
 - A dedicated leftover-repair feature or queue
-- CLI / MCP delete clients
 
 ## Open Questions
 

@@ -36,7 +36,7 @@ includes `embedding_model` and `embedded_at`.
 - [x] `S1` The path `id` is not rewritten; lookup is an exact match on the string as sent
 - [x] `S1` Fetch does not create, embed, index, or delete
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); it runs before the UUID check and before any store read
-- [ ] `S1` MCP clients that wrap this route use agent text `Memory <id> was not found.` when REST returns 404
+- [ ] `S1` MCP clients that wrap this route use agent text `Memory <id> was not found.` when REST returns 404 — a normal (non-error) tool result; absence is not a transport or tool failure
 
 ## Observable Contract
 
@@ -99,7 +99,6 @@ or API keys.
 - Batch fetch
 - Fetch by anything other than the path UUID v4
 - Serving or repairing a row that was never embedded (create does not acknowledge one)
-- MCP agent-text rendering (issue #10)
 
 ## Open Questions
 
