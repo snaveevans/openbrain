@@ -45,7 +45,7 @@ Published `similarity` is the index cosine clamped into `[0, 1]`
 - [x] `S1` A `query` larger than the embedder accepts is **400** `` `query` is too large. ``
 - [x] `S1` Search does not create, update, index, or delete
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); it runs before body parse, embed, and ranking
-- [ ] `S1` MCP clients render zero hits as `No memories matched "<query>".` and non-empty hits with the memory-model text, numbered from `1`, separated by `---`
+- [x] `S1` MCP clients render zero hits as `No memories matched "<query>".` and non-empty hits with the memory-model text, numbered from `1`, separated by `---`
 
 ## Observable Contract
 

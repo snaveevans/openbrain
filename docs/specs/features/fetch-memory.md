@@ -7,7 +7,7 @@ date: 2026-08-14
 
 # Fetch Memory
 
-**Status:** `in-progress`
+**Status:** `active`
 **Owner:** tyler
 **Related Specs:** [memory-model](../cross-cutting/memory-model.md), [authentication](../cross-cutting/authentication.md), [rest-api](rest-api.md)
 
@@ -36,7 +36,7 @@ includes `embedding_model` and `embedded_at`.
 - [x] `S1` The path `id` is not rewritten; lookup is an exact match on the string as sent
 - [x] `S1` Fetch does not create, embed, index, or delete
 - [x] `S1` Auth is [authentication](../cross-cutting/authentication.md); it runs before the UUID check and before any store read
-- [ ] `S1` MCP clients that wrap this route use agent text `Memory <id> was not found.` when REST returns 404 — a normal (non-error) tool result; absence is not a transport or tool failure
+- [x] `S1` MCP clients that wrap this route use agent text `Memory <id> was not found.` when REST returns 404 — a normal (non-error) tool result; absence is not a transport or tool failure
 
 ## Observable Contract
 

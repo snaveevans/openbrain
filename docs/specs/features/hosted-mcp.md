@@ -7,7 +7,7 @@ date: 2026-08-17
 
 # Hosted MCP
 
-**Status:** `review`
+**Status:** `in-progress`
 **Owner:** tyler
 **Related Specs:** [rest-api](rest-api.md), [authentication](../cross-cutting/authentication.md), [oauth](../cross-cutting/oauth.md), [memory-model](../cross-cutting/memory-model.md), [search-memories](search-memories.md), [fetch-memory](fetch-memory.md), [create-memory](create-memory.md), [delete-memory](delete-memory.md)
 
@@ -52,24 +52,24 @@ MCP-specific.
 
 ### Slice S1 — Worker, discovery, BYOK gate, full tool surface
 
-- [ ] `S1` `GET {mcp}/health` is unauthenticated and returns `200 { ok: true, service: "openbrain-mcp" }` with no secrets
-- [ ] `S1` MCP is served over stateless streamable HTTP at `{mcp}/mcp`; JSON responses on; no server-side session
-- [ ] `S1` `{mcp}/mcp` without `Authorization: Bearer` is `401` carrying the `WWW-Authenticate` challenge per [oauth](../cross-cutting/oauth.md)
-- [ ] `S1` Any bearer token that does not resolve to an operator-minted token in KV is `401` with `error="invalid_token"` in the challenge. In S1 the gate does **not** parse JWTs — a presented access JWT is simply a KV miss and gets the same rejection
-- [ ] `S1` An operator-minted token present in KV is accepted as `Bearer` at `{mcp}/mcp`, per the BYOK section of [oauth](../cross-cutting/oauth.md)
-- [ ] `S1` `x-api-key` presented without a bearer token is `401` — the MCP surface never accepts the API key as a caller credential
-- [ ] `S1` The Worker calls REST with its **own configured** `API_KEY` and never forwards a caller credential or token upstream
-- [ ] `S1` Each advertised tool is implemented only by calling the matching REST route in [rest-api](rest-api.md)
-- [ ] `S1` Advertised tools cover the full REST surface: `search_memories`, `fetch`, `create_memory`, `delete_memory` per the operation specs
-- [ ] `S1` The Worker speaks the streamable-HTTP method set statelessly: `initialize` returns protocol version and a `tools` capability, `ping` succeeds, and no other capabilities are advertised
-- [ ] `S1` `{mcp}/mcp` is POST-only; `GET /mcp` (SSE stream request) is `405` with the JSON error envelope
-- [ ] `S1` `tools/call` results use the MCP envelope `{ content: [{ type: "text", text }] }`; domain failures arrive as HTTP 200 with `isError: true`
-- [ ] `S1` Agent-facing text uses the [memory-model](../cross-cutting/memory-model.md) rendering, plus the per-operation text pins in the operation specs
-- [ ] `S1` REST `401` / `400` / `500` become MCP tool errors (`isError: true`) with the server `error` string (or a status mention if the body has none)
-- [ ] `S1` REST `404` on `fetch` / `delete_memory` is a **normal** (non-error) tool result with the operation spec's not-found text — absence is data for the agent, not a tool failure
-- [ ] `S1` The Worker URL-encodes the `id` argument as a single path segment before calling REST; it validates nothing client-side — REST owns UUID validation
-- [ ] `S1` Both well-known documents are served unauthenticated at the domain root with the fields required by [oauth](../cross-cutting/oauth.md)
-- [ ] `S1` Unknown non-MCP paths return `404` `{ error: "Not found." }`
+- [x] `S1` `GET {mcp}/health` is unauthenticated and returns `200 { ok: true, service: "openbrain-mcp" }` with no secrets
+- [x] `S1` MCP is served over stateless streamable HTTP at `{mcp}/mcp`; JSON responses on; no server-side session
+- [x] `S1` `{mcp}/mcp` without `Authorization: Bearer` is `401` carrying the `WWW-Authenticate` challenge per [oauth](../cross-cutting/oauth.md)
+- [x] `S1` Any bearer token that does not resolve to an operator-minted token in KV is `401` with `error="invalid_token"` in the challenge. In S1 the gate does **not** parse JWTs — a presented access JWT is simply a KV miss and gets the same rejection
+- [x] `S1` An operator-minted token present in KV is accepted as `Bearer` at `{mcp}/mcp`, per the BYOK section of [oauth](../cross-cutting/oauth.md)
+- [x] `S1` `x-api-key` presented without a bearer token is `401` — the MCP surface never accepts the API key as a caller credential
+- [x] `S1` The Worker calls REST with its **own configured** `API_KEY` and never forwards a caller credential or token upstream
+- [x] `S1` Each advertised tool is implemented only by calling the matching REST route in [rest-api](rest-api.md)
+- [x] `S1` Advertised tools cover the full REST surface: `search_memories`, `fetch`, `create_memory`, `delete_memory` per the operation specs
+- [x] `S1` The Worker speaks the streamable-HTTP method set statelessly: `initialize` returns protocol version and a `tools` capability, `ping` succeeds, and no other capabilities are advertised
+- [x] `S1` `{mcp}/mcp` is POST-only; `GET /mcp` (SSE stream request) is `405` with the JSON error envelope
+- [x] `S1` `tools/call` results use the MCP envelope `{ content: [{ type: "text", text }] }`; domain failures arrive as HTTP 200 with `isError: true`
+- [x] `S1` Agent-facing text uses the [memory-model](../cross-cutting/memory-model.md) rendering, plus the per-operation text pins in the operation specs
+- [x] `S1` REST `401` / `400` / `500` become MCP tool errors (`isError: true`) with the server `error` string (or a status mention if the body has none)
+- [x] `S1` REST `404` on `fetch` / `delete_memory` is a **normal** (non-error) tool result with the operation spec's not-found text — absence is data for the agent, not a tool failure
+- [x] `S1` The Worker URL-encodes the `id` argument as a single path segment before calling REST; it validates nothing client-side — REST owns UUID validation
+- [x] `S1` Both well-known documents are served unauthenticated at the domain root with the fields required by [oauth](../cross-cutting/oauth.md)
+- [x] `S1` Unknown non-MCP paths return `404` `{ error: "Not found." }`
 
 ### Slice S2 — Interactive OAuth: authorize, codes, token issuance (static clients)
 

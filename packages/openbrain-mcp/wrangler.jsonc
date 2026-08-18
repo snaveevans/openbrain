@@ -1,0 +1,52 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "openbrain-mcp",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-14",
+  "account_id": "361062ddedd5f7e00c273012223fbb91",
+  "workers_dev": true,
+  // Worker is the origin for the {mcp} hostname (ADR-0008). DNS is created on
+  // deploy. REST (openbrain-api) stays on its own hostname.
+  "routes": [
+    { "pattern": "mcp.openbrain.tylerevans.co", "custom_domain": true },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+  // Secrets (set via `wrangler secret put`, never committed):
+  //   API_KEY       — the root credential; also the Worker's own upstream
+  //                   credential when it calls REST.
+  //   TOKEN_SECRET  — HMAC signing secret for access JWTs (S2+).
+  // Vars:
+  //   API_URL       — versioned REST root {api}, e.g. https://openbrain.tylerevans.co/v1
+  "vars": {
+    "API_URL": "https://openbrain.tylerevans.co/v1",
+  },
+  // Token-lifecycle KV (BYOK operator-minted tokens in S1; codes / refresh
+  // tokens in S2+). Namespace id is created by an ops script (idempotent);
+  // keep it in sync if the namespace is ever recreated.
+  "kv_namespaces": [
+    {
+      "binding": "TOKENS",
+      "id": "00000000000000000000000000000000",
+    },
+  ],
+  // Local only (`npm run dev` → wrangler dev -e dev). Bindings are not
+  // inherited — redeclare every binding this Worker needs. Do not
+  // `wrangler deploy -e dev`.
+  "env": {
+    "dev": {
+      "workers_dev": false,
+      "routes": [],
+      "vars": {
+        "API_URL": "http://localhost:8787/v1",
+      },
+      "kv_namespaces": [
+        {
+          "binding": "TOKENS",
+          "id": "00000000000000000000000000000000",
+        },
+      ],
+    },
+  },
+}
