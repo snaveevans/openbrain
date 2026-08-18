@@ -82,6 +82,9 @@ MCP-specific.
 - [ ] `S2` Static clients from `MCP_CLIENTS` can complete the flow (optional `client_secret` honored when present)
 - [ ] `S2` Issued access tokens are accepted as `Bearer` at `{mcp}/mcp` (JWT signature/iss/aud/exp validation — the JWT-accepting gate path lands in this slice)
 - [ ] `S2` Missing/empty `API_KEY` or `TOKEN_SECRET`, or unparseable/wrong-shaped `MCP_CLIENTS`, fails closed with `500` naming what is missing — a missing `TOKEN_SECRET` fails the whole `/mcp` gate, BYOK lookups included ([oauth](../cross-cutting/oauth.md))
+- [ ] `S2` `POST {mcp}/authorize` re-validates the OAuth params from the hidden fields before minting; a correct key with a tampered `redirect_uri` (or any field) → `400`, never a `302` to an unvalidated URI ([oauth](../cross-cutting/oauth.md))
+- [ ] `S2` The `401` form re-render does not pre-fill the pasted key, and every OAuth param rendered into HTML is HTML-escaped (reflected-XSS + secret-leak guard) ([oauth](../cross-cutting/oauth.md))
+- [ ] `S2` At `{mcp}/mcp`, JWT validation pins `HS256` and rejects `alg=none` (and any non-HMAC `alg`) as `401 error="invalid_token"` even if the payload would otherwise verify ([oauth](../cross-cutting/oauth.md))
 
 ### Slice S3 — Dynamic registration + refresh rotation (ChatGPT path)
 

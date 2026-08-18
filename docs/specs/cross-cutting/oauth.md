@@ -108,7 +108,10 @@ errors be delivered via `302` with `error` params and echoed `state`.
 `redirect_uri`, `code_challenge`, `code_challenge_method=S256`; `scope` and
 `state` are optional. Malformed or incompletely validated requests get `400`
 JSON. Valid requests get `200 text/html`: a minimal page with all OAuth params
-as hidden fields plus one input for the API key.
+as hidden fields plus one input for the API key. Both the `200` form and the
+success `302` carry `Cache-Control: no-store` (a pending authorize page and a
+code-bearing redirect must not be cached). `/authorize` is `GET`/`POST` only;
+any other method → `405`.
 
 The `400` bodies are house-envelope sentences (as at `/mcp` and REST), not RFC
 error codes — no connector parses them, since v1 sends no error redirects:
@@ -127,11 +130,24 @@ permission in Redirect URIs above stands unused).
 `POST {mcp}/authorize` trims and exact-compares the pasted key to `API_KEY`
 (same comparison rules as [authentication](authentication.md)).
 
+- POST re-validates the OAuth params from the (client-submitted) hidden fields
+  before minting anything: `client_id` known, `redirect_uri` an exact match
+  for a registered URI, `code_challenge` present with
+  `code_challenge_method=S256`. A correct key with a tampered `redirect_uri`
+  (or any other field) → `400` JSON per the rules above, never a `302` to an
+  unvalidated URI — the hidden fields are not trusted because the client owns
+  them.
 - Wrong or missing key: `401`, the form re-rendered with a generic
   "Invalid API key." message. No redirect, no detail beyond success/failure.
+  The re-rendered form must **not** pre-fill the pasted key (it is a secret),
+  and every OAuth param rendered into HTML — including the echoed `state`,
+  `client_id`, and `redirect_uri` — must be HTML-escaped (these are
+  attacker-influenceable; unescaped they are a reflected-XSS surface).
 - Valid key: create an authorization code, store it in KV bound to
   `{ client_id, redirect_uri, code_challenge }`, and `302` to the validated
-  `redirect_uri` with `code` and echoed `state`.
+  `redirect_uri` with `code` and echoed `state`. The `302` `Location`
+  URL-encodes `code` and `state`; if the `redirect_uri` already carries a
+  query string, the params are appended with `&` rather than a second `?`.
 
 ### Authorization codes
 
@@ -154,9 +170,12 @@ its own ADR.
 
 ### Token endpoint
 
-`POST {mcp}/token`, form-encoded. Client authentication is whatever the client
-registered with: `none` (public), `client_secret_basic`, or
-`client_secret_post`. DCR clients default to `none`.
+`POST {mcp}/token`, form-encoded (`application/x-www-form-urlencoded`). A
+non-form `Content-Type`, or a body that is not form-encoded, →
+`400 { "error": "invalid_request" }`; any method other than `POST` → `405`.
+Client authentication is whatever the client registered with: `none`
+(public), `client_secret_basic`, or `client_secret_post`. DCR clients default
+to `none`.
 
 Client authentication runs **before** any grant validation and follows the
 RFC 6749 §5.2 split:
@@ -173,7 +192,10 @@ RFC 6749 §5.2 split:
 - `grant_type=authorization_code`: verify the code as above, then verify
   `code_verifier` per RFC 7636: `BASE64URL(SHA256(verifier))` must equal the
   stored `code_challenge`. Client id and redirect URI must match those bound
-  at authorization time. Any mismatch → `400 { "error": "invalid_grant" }`.
+  at authorization time. A missing required parameter (`code`,
+  `code_verifier`, or `redirect_uri` absent) →
+  `400 { "error": "invalid_request" }` per RFC 6749 §5.2; a *mismatch* of a
+  presented value → `400 { "error": "invalid_grant" }`.
   Success → `200` with `access_token`, `token_type: "Bearer"`,
   `expires_in: 3600`, `refresh_token`, `scope: "memories"`.
 - `grant_type=refresh_token`: refresh tokens are opaque (≥128 bits), stored
@@ -191,7 +213,11 @@ HMAC-signed JWTs using `TOKEN_SECRET`. Claims: `iss` = `{mcp}`, `aud` =
 `scope` = `"memories"`, `iat`, `exp` = `iat + 1 hour`, `jti` random.
 
 Validation checks signature, `iss`, `aud`, `exp` only — no storage read. The
-MCP hot path adds one signature check and nothing else
+validator pins the algorithm to `HS256` and rejects `alg=none` and any
+non-HMAC algorithm before it touches the signature — a token that claims a
+different or missing `alg` is `401` with `error="invalid_token"` even if its
+payload would otherwise verify (the classic `alg=none` bypass). The MCP hot
+path adds one signature check and nothing else
 (ADR-0008). 1-hour TTL is what bounds an unrevocable token's blast radius.
 
 ### MCP endpoint gating
