@@ -127,12 +127,15 @@ mapping, the credential substitution, and the "no local domain logic" rule.
 
 | Slice | Scope | Issue | Depends on |
 | ----- | ----- | ----- | ---------- |
-| `S1` | Worker + MCP tools + well-knowns + BYOK `Bearer` acceptance | #10 | REST routes on main (#11) |
-| `S2` | `/authorize`, codes, `/token` authorization_code, static clients | #10 | `S1` |
-| `S3` | `/register` (DCR), `refresh_token` rotation | #10 | `S2` |
+| `S1` | Worker + MCP tools + well-knowns + BYOK `Bearer` acceptance | #45 | REST routes on main (#11) |
+| `S2` | `/authorize`, codes, `/token` authorization_code, static clients | #46 | `S1` (#45) |
+| `S3` | `/register` (DCR), `refresh_token` rotation, operator connect README | #47 | `S2` (#46) |
 
-Client readiness per slice: ChatMCP works at `S1`; Grok and Claude at `S2`;
-ChatGPT at `S3`.
+Client readiness per slice: ChatMCP works at `S1`; Grok at `S2` (its connector
+form asks for a client id, so static registration suffices); Claude and ChatGPT
+at `S3` (both register via DCR — Claude's connector UI offers no client-id
+field). If Claude's form turns out to accept a static id, it moves to `S2`
+without a spec change beyond this line.
 
 ## Edge Cases & Error States
 
@@ -158,6 +161,7 @@ log-prohibition list (never log keys, tokens, codes, verifiers, or `Authorizatio
 
 - Durable Objects / stateful MCP sessions
 - CIMD (client-id metadata documents) — deferred until ChatGPT's handshake demands it
+- Operator connect guides (per-client setup instructions) — a README deliverable written from a verified real handshake during `S3`, not spec behavior
 - Refresh-chain revocation on replay detection (replay is `invalid_grant` only)
 - Per-token revocation of access JWTs (1h TTL is the bound; see [ADR-0008](../../decisions/0008-oauth-gate-in-front-of-hosted-mcp.md))
 - `/authorize` attempt throttling (accepted risk, v1)
